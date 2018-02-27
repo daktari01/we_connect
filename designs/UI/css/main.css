@@ -3,16 +3,16 @@ body, html{
 }
 
 body { 
-    /* The image used */
-    background-color: lightgray
-
-    /* Full height */
+    background-image: url("../images/backgrounds/office-bg.jpg");
+    background-color: #02ffdde0;
     height: 100%; 
-
-    /* Center and scale the image */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    min-height: 75rem;
+}
+.navbar-brand img{
+    max-height: 40px;
 }
 
 #loginWrapper{
@@ -34,7 +34,15 @@ body {
     margin-top: 30px;
     padding: 15px 20px 25px 20px;
 }
-#loginWrapper h2{
-    text-align: center;
-    margin-bottom: 20px;
+#loginWrapper h3{
+    text-align: left;
+    margin-bottom: 10px;
+}
+#loginLogo img{
+    width: auto;
+    height: auto;
+    max-width: 300px;
+}
+#loginLogo{
+    margin-bottom: 15px;
 }
