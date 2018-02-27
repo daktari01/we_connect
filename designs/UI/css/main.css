@@ -1,0 +1,15 @@
+#loginWrapper{
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 10 0;
+    align-items: center;
+    justify-content: space-around;
+    display: flex;
+    float: none;
+}
+#loginContainer{
+    margin-top: 30px;
+}
+
+
