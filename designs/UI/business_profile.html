@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0"/>
+        <title>Business Profile | WeConnect</title>
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-faded">
+                <a class="navbar-brand" href="#">
+                    <img src="images/logos/weConnect.png" class="logo">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="navbarNavDropdown" class="navbar-collapse collapse">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Register business <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Update business</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Post review</a>
+                        </li>
+        
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.html">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="register_user.html">Register</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="container white-bg">
+            <div class="row my-2 top-row">
+                <div class="col-sm-4">
+                    <h3 class="company_name">Company name</h3>
+                    <img src="//placehold.it/150" class="mx-auto img-fluid img-circle d-block" alt="avatar">
+                    <br>
+                    <div class="star-rating">
+                        <span class="fa fa-star-o" data-rating="1"></span>
+                        <span class="fa fa-star-o" data-rating="2"></span>
+                        <span class="fa fa-star-o" data-rating="3"></span>
+                        <span class="fa fa-star-o" data-rating="4"></span>
+                        <span class="fa fa-star-o" data-rating="5"></span>
+                        <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                    </div>
+                    <dl>
+                        <dt>Category:</dt> <dd>IT Company</dd>
+                        <dt>Location:</dt> <dd>San Fransico, CA</dd>
+                        <dt>Website:</dt> <dd><a href="#">www.example.com</a></dd>
+                    </dl>
+                    <a href="#" class="btn btn-primary review-button">Add a Review</a>
+                </div>
+                <div class="col-sm-8 " id="reviews">
+                    <h3>Company Reviews</h3>
+                    <div class="col-sm-3 pull-left" id="user_holder">
+                        <img src="./images/users/user_avatar.png" id="user_avatar" class="mx-auto img-fluid img-circle d-block" alt="avatar">
+                    </div>
+                    <div class="col-sm-9 pull-right">
+                        <h4>Rating Title</h4>
+                        <div class="star-rating pull-left">
+                            <span class="fa fa-star-o" data-rating="1"></span>
+                            <span class="fa fa-star-o" data-rating="2"></span>
+                            <span class="fa fa-star-o" data-rating="3"></span>
+                            <span class="fa fa-star-o" data-rating="4"></span>
+                            <span class="fa fa-star-o" data-rating="5"></span>
+                            <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                        </div>
+                        <br><br>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                            Ut enim ad minim veniam, quis nostrud exercitation ullamco 
+                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
+                            dolor in reprehenderit in voluptate velit esse cillum dolore eu 
+                            fugiat nulla pariatur. Excepteur sint occaecat cupidatat non 
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
+</html>

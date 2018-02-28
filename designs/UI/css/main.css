@@ -4,7 +4,7 @@ body, html{
 
 body { 
     background-image: url("../images/backgrounds/office-bg.jpg");
-    background-color: #02ffdde0;
+    background-color: #dcdcdc;
     height: 100%; 
     background-position: center;
     background-repeat: no-repeat;
@@ -14,7 +14,9 @@ body {
 .navbar-brand img{
     max-height: 40px;
 }
-.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light .navbar-nav .show>.nav-link{
+.navbar-light .navbar-nav .active>.nav-link, .navbar-light .navbar-nav 
+.nav-link.active, .navbar-light .navbar-nav .nav-link.show, .navbar-light 
+.navbar-nav .show>.nav-link{
     color: #2980ba;
 }
 .navbar-light .navbar-nav .nav-link{
@@ -52,9 +54,63 @@ body {
 #loginLogo{
     margin-bottom: 15px;
 }
+#user_avatar{
+    max-height: 100px;
+    max-width: 100px;
+}
+#user_holder, #reviews{
+    margin-top: 35px;
+}
 label{
     margin-bottom: 0rem;
 }
 .form-group{
     margin-bottom: .8rem;
+}
+.white-bg{
+    background-color: white;
+}
+.top-row{
+    margin: 30px 0 15px 0;
+}
+.star-rating {
+  line-height: 45px;
+  font-size: 2.00em;
+  color: #2980ba;
+  text-align: center;
+}
+
+.star-rating .fa-star{color: #2980ba;}
+
+.company_name{
+    padding: 10px 0 20px 0;
+    text-align: center;
+    color: #2980ba;
+}
+
+dl {
+  width: 100%;
+  overflow: hidden;
+  margin-left: 30px;
+  padding: 20px 0 10px 20px;
+}
+dt, dd {
+  float: left;
+}
+dt{
+    width: 40%;
+}
+dd{
+    width: 60%;
+}
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.review-button{
+    text-align: center;
+    margin-bottom: 15px;
+    margin-left: 30px;
 }
