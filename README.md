@@ -1,9 +1,9 @@
-#WeConnect
+# WeConnect
 
-##Introduction
+## Introduction
 WeConnect is an application where users submit reviews about businesses.
 
-##The Interface
+## The Interface
 1. [Home Page](https://daktari01.github.io/we_connect/designs/UI/index.html)
 2. [User Registration](https://daktari01.github.io/we_connect/designs/UI/register_user.html)
 3. [User Login](https://daktari01.github.io/we_connect/designs/UI/login.html)
