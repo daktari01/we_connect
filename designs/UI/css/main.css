@@ -82,6 +82,11 @@ body {
 #modalCompanyName{
     padding-bottom: 10px;
 }
+#indexSearchBox{
+    padding: 20px 20px 20px 20px;
+    border: 1px solid #2980ba;
+    border-radius: 2px;
+}
 label{
     margin-bottom: 0rem;
 }
@@ -138,11 +143,19 @@ hr {
 .search_item{
     margin: 25px 5px 10px 5px;
 }
+.btnSearch{
+    color: #2980ba;
+    border-color: #2980ba;
+}
+.btnSearch:hover{
+    color: #fff;
+    background-color: #2980ba;
+    border-color: #2980ba;
+}
 .inputSearch{
     color: #2980ba;
     border-color: #2980ba;
 }
-.inputSearch:hover{
-    color: #fff;
-    background-color: #2980ba;
+.searchContainer{
+    margin-top: 200px;
 }

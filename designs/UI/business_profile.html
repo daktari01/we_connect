@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -19,31 +20,12 @@
                 <div id="navbarNavDropdown" class="navbar-collapse collapse">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item active">
-                            <a class="nav-link" href="#">Register business <span class="sr-only">(current)</span></a>
+                            <a class="nav-link" href="register_business.html">Register business <span class="sr-only">(current)</span></a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Update business</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Post review</a>
-                        </li>
-        
                     </ul>
                     <ul class="navbar-nav">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                            </div>
-                        </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="login.html">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="register_user.html">Register</a>
+                            <a class="nav-link" href="login.html">Logout</a>
                         </li>
                     </ul>
                 </div>
@@ -68,10 +50,45 @@
                         <dt>Location:</dt> <dd>San Fransico, CA</dd>
                         <dt>Website:</dt> <dd><a href="#">www.example.com</a></dd>
                     </dl>
-                    <a href="landing_page.html" class="btn btn-primary review-button" data-target="#reviewModal">Add a Review</a>
-                    <a href="#" class="btn btn-primary review-button">Update Profile</a>
+                    <a href="#" class="btn btn-primary review-button" data-toggle="modal" data-target="#reviewModal">Add a Review</a>
+                    <a href="update_business.html" class="btn btn-primary review-button">Update Profile</a>
                     <a href="#" class="btn btn-danger review-button">Delete Profile</a>
-                    <a href="mypage.htm" data-toggle="modal" data-target="#myModal">Click me</a>
+                </div>
+                <!-- Review Modal -->
+                <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title company_name" id="reviewModalLabel">Review A Business</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h4 class="company_name" id="modalCompanyName">Company Name</h4>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <img src="./images/logos/weConnectCircle.png" class="mx-auto img-fluid img-circle d-block" id="company_logo" alt="avatar">
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="star-rating">
+                                            <span class="fa fa-star-o" data-rating="1"></span>
+                                            <span class="fa fa-star-o" data-rating="2"></span>
+                                            <span class="fa fa-star-o" data-rating="3"></span>
+                                            <span class="fa fa-star-o" data-rating="4"></span>
+                                            <span class="fa fa-star-o" data-rating="5"></span>
+                                            <input type="hidden" name="whatever1" class="rating-value" value="2.56">
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Review Title" aria-describedby="basic-addon1">
+                                        <textarea class="form-control" id="reviewTextarea1" rows="3" placeholder="Tell us more..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Submit Review</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-sm-8 " id="reviews">
                     <h3>Company Reviews</h3>

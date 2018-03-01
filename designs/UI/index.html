@@ -28,40 +28,46 @@
                 </div>
             </nav>
         </div>
-        <div class="container col-sm-6" id="loginContainer">
-            <div id="loginWrapper">
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <div class="container col-sm d-flex searchContainer" id="loginContainer">
+            <div id="loginWrapper" class="justify-content-center align-self-center">
+                <div class="search-box white-bg" id="indexSearchBox">
+                  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-name" role="tab" aria-controls="pills-home" aria-selected="true">Business Name</a>
+                      <a class="nav-link active" id="pills-name-tab" data-toggle="pill" href="#pills-name" role="tab" aria-controls="pills-name" aria-selected="true">Business Name</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-location" role="tab" aria-controls="pills-profile" aria-selected="false">Business Location</a>
+                      <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-location" role="tab" aria-controls="pills-location" aria-selected="false">Business Location</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-category" role="tab" aria-controls="pills-contact" aria-selected="false">Business Category</a>
+                      <a class="nav-link" id="pills-category-tab" data-toggle="pill" href="#pills-category" role="tab" aria-controls="pills-category" aria-selected="false">Business Category</a>
                     </li>
-                    </ul>
-                    <div class="tab-content" id="pills-tabContent">
+                  </ul>
+                  <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-name" role="tabpanel" aria-labelledby="pills-name-tab">
-                        <form>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button">Button</button>
-                                </div>
-                            </div>
-                        </form>
+                      <div class="input-group mb-3">
+                          <input type="text" class="form-control inputSearch" placeholder="Search business by name ..." aria-label="pills-name-input" aria-describedby="basic-addon2">
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary btnSearch" type="button">Search</button>
+                          </div>
+                      </div>
                     </div>
                     <div class="tab-pane fade" id="pills-location" role="tabpanel" aria-labelledby="pills-location-tab">
-                        <form>
-                            
-                        </form>
+                      <div class="input-group mb-3">
+                          <input type="text" class="form-control inputSearch" placeholder="Search business by location ..." aria-label="pills-location-input" aria-describedby="basic-addon2">
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary btnSearch" type="button">Search</button>
+                          </div>
+                      </div>
                     </div>
                     <div class="tab-pane fade" id="pills-category" role="tabpanel" aria-labelledby="pills-category-tab">
-                        <form>
-                        
-                        </form>
+                      <div class="input-group mb-3">
+                          <input type="text" class="form-control inputSearch" placeholder="Search business by category ..." aria-label="pills-category-input" aria-describedby="basic-addon2">
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary btnSearch" type="button">Search</button>
+                          </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
             </div>
         </div>
