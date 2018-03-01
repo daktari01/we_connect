@@ -138,3 +138,11 @@ hr {
 .search_item{
     margin: 25px 5px 10px 5px;
 }
+.inputSearch{
+    color: #2980ba;
+    border-color: #2980ba;
+}
+.inputSearch:hover{
+    color: #fff;
+    background-color: #2980ba;
+}
