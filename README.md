@@ -1,6 +1,8 @@
 # WeConnect
 [![Build Status](https://travis-ci.org/daktari01/we_connect.svg?branch=master)](https://travis-ci.org/daktari01/we_connect)
 
+[![Coverage Status](https://coveralls.io/repos/github/daktari01/we_connect/badge.svg?branch=master)](https://coveralls.io/github/daktari01/we_connect?branch=master)
+
 ## Introduction
 WeConnect is an application where users submit reviews about businesses.
 
