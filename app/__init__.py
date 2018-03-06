@@ -21,9 +21,10 @@ def create_app(config_name):
     @app.route('/api/v1/businesses', methods=['POST', 'GET'])
     def fn_businesses():
         """Create business and get all businesses"""
-        data = request.get_json()
-        r_business_id = str(uuid.uuid4())
+        
         if request.method == 'POST':
+            data = request.get_json()
+            r_business_id = str(uuid.uuid4())
             new_business = {"business_id":r_business_id, 
                 "name":data['name'], "location":data['location'], 
                 "web_address":data['web_address'],
@@ -31,7 +32,16 @@ def create_app(config_name):
             businesses[r_business_id] = new_business
             return jsonify({"message" : "Business created successfully"}), 201
 
-        elif request.method == 'GET':
-            return jsonify(businesses)
+        if request.method == 'GET':
+            return jsonify(businesses), 200
+        return jsonify({'message' : 'Invalid input'})
+
+    @app.route('/api/v1/business/<business_id>', methods=['GET', 'PUT', 'DELETE'])
+    def fn_business(business_id):
+        # user = 
+        # if request.method == 'GET':
+        pass
+
 
     return app
+

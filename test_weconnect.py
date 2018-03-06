@@ -6,21 +6,29 @@ from app import create_app
 class TestAuthentication(unittest.TestCase):
     """Class to test API authentication"""
 
-
     def setUp(self):
         self.app = create_app(config_name="testing")
         create_app.testing = True
         self.client = self.app.test_client
+        self.login_user = {"username" : "test_user", "password" : "Test123"}
         self.test_user = {"username" : "test_user", "password" : "Test123"}
         self.test_business = {"name" : "Andela Kenya", 
                                 "location" : "Nairobi, Kenya", 
                                 "web_address" : "www.andela.com", 
                                 "category" : "IT"}
+        self.client().post('/api/v1/auth/register', 
+            data=json.dumps(self.login_user), 
+            content_type='application/json')
+        to_response = self.client().post('/api/v1/auth/login', 
+            data=json.dumps(self.login_user), headers={"content-type":'application/json'})
+        self.token = json.loads(to_response.data.decode())
+        token = self.token['token']
 
     def test_register_user(self):
         """Test api can register new user"""
         response = self.client().post('/api/v1/auth/register', 
-            data=json.dumps(self.test_user), content_type='application/json')
+            data=json.dumps(self.test_user), 
+            content_type='application/json')
         self.assertEqual(response.status_code, 201)
         self.assertIn('User created', str(response.data))
 
@@ -29,11 +37,21 @@ class TestAuthentication(unittest.TestCase):
         response = self.client().get('/api/v1/auth/users')
         self.assertEqual(response.status_code, 200)
 
+    def test_login_user(self):
+        """Test api can login registered user"""
+        self.client().post('/api/v1/auth/login', 
+            data=json.dumps(self.test_user), 
+            headers={'content-type':'application/json', 
+                    'x-access-token':self.token})
+        response = self.client().post('/api/v1/auth/login', 
+            data=json.dumps(self.test_user), content_type='application/json')
+
     def test_register_business(self):
         """Test api can register new business"""
         response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
-                content_type='application/json')
+            headers={'content-type':'application/json', 
+                    'x-access-token':self.token})
         self.assertEqual(response.status_code, 201)
         self.assertIn('Business created', str(response.data))
 
@@ -41,6 +59,7 @@ class TestAuthentication(unittest.TestCase):
         """Test api can get all businesses"""
         response = self.client().get('/api/v1/businesses')
         self.assertEqual(response.status_code, 200)
+        
     
 
 if __name__ == "__main__":
