@@ -45,6 +45,7 @@ class TestAuthentication(unittest.TestCase):
                     'x-access-token':self.token})
         response = self.client().post('/api/v1/auth/login', 
             data=json.dumps(self.test_user), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
     def test_register_business(self):
         """Test api can register new business"""
