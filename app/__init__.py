@@ -19,20 +19,20 @@ def create_app(config_name):
     app.register_blueprint(auth_blueprint, url_prefix='/api/v1/auth')
 
     @app.route('/api/v1/businesses', methods=['POST', 'GET'])
-    @token_required
-    def fn_businesses(current_user):
+    def fn_businesses():
         """Create business and get all businesses"""
         
         if request.method == 'POST':
+            current_user = "1"
             data = request.get_json()
-            r_business_id = str(uuid.uuid4())
-            new_business = {"business_id":r_business_id, 
-                "user_id":current_user.user_id,
+            new_business_id = 1
+            business_id = len(businesses) + 1
+            new_business = {"business_id":business_id, 
+                "user_id":current_user,
                 "name":data['name'], "location":data['location'], 
                 "web_address":data['web_address'],
                 "category":data['category']}
-            businesses[r_business_id] = new_business
-            print(current_user.user_id)
+            businesses["business_id"] = new_business
             return jsonify({"message" : "Business created successfully"}), 201
 
         if request.method == 'GET':
@@ -41,18 +41,13 @@ def create_app(config_name):
 
     @app.route('/api/v1/business/<business_id>', methods=[
         'GET', 'PUT', 'DELETE'])
-    @token_required
-    def fn_business(current_user, business_id):
+    def fn_business(business_id):
         data = request.get_json()
         single_business = businesses[data['business_id']['name']]
+        current_user = "1"
 
         if not single_business:
             return jsonify({"message" : "Business not found"}), 404
-
-        if single_business["user_id"] is not current_user.user_id:
-            return jsonify({"message": 
-                "A user can only perform action on businesses the "\
-                    "user created."}), 401
 
         # Find a single business by business_id
         if request.method == 'GET':
@@ -60,6 +55,7 @@ def create_app(config_name):
         
         # Update business details
         if request.method == 'PUT':
+            single_business['user_id'] = current_user
             single_business['name'] = data['name']
             single_business['location'] = data['location']
             single_business['web_address'] = data['web_address']

@@ -9,11 +9,12 @@ class TestAuthentication(unittest.TestCase):
     def setUp(self):
         self.app = create_app(config_name="testing")
         create_app.testing = True
+        current_user = "1"
         self.client = self.app.test_client
         self.login_user = {"username" : "test_user", "password" : "Test123"}
         self.test_user = {"username" : "test_user", "password" : "Test123"}
         self.test_business = {"name" : "Andela Kenya", 
-                                # "user_id": current_user.user_id,
+                                "user_id": current_user,
                                 "location" : "Nairobi, Kenya", 
                                 "web_address" : "www.andela.com", 
                                 "category" : "IT"}
@@ -65,7 +66,7 @@ class TestAuthentication(unittest.TestCase):
 
     def test_get_one_business(self):
         """Test api can get one business"""
-        pass
+        response = self.client().get('/api/v1/business/2')
         
     
 

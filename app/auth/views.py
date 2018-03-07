@@ -9,7 +9,6 @@ from functools import wraps
 from . import auth
 
 users = {}
-# SECRET_KEY='K*7sk02ht^9$@DA'
 
 def token_required(fn):
     """Decorator to require authentication token"""
@@ -40,8 +39,7 @@ def register_user():
     return jsonify({"message" : "User created"}), 201
 
 @auth.route('/users', methods=['GET'])
-@token_required
-def get_all_users(current_user):
+def get_all_users():
     """Get all users"""
     return jsonify(users), 200
 
@@ -71,16 +69,14 @@ def login():
 
 
 @auth.route('/reset-password', methods=['POST'])
-@token_required
-def reset_password(current_user):
+def reset_password():
     """Reset user password"""
     data = request.get_json()
-    current_user.password = generate_password_hash(data['password'])
+    users[data["username"]]["password"] = generate_password_hash(data['password'])
     return jsonify({"message" : "Password reset successfully"})
 
 @auth.route('/logout', methods=['POST'])
-@token_required
-def logot(current_user):
+def logout(current_user):
     """Log user out"""
     current_user.token = None
     return jsonify({"message": "You are now logged out"})
