@@ -33,6 +33,8 @@ def register_user():
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'])
     r_user_id = str(uuid.uuid4())
+    if data['username'] in users:
+        return jsonify({"message": "User already exists. Please login"})
     new_user = {"user_id":r_user_id, "username":data['username'], 
                 "password":hashed_password}
     users[data['username']] = new_user

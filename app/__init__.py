@@ -27,32 +27,40 @@ def create_app(config_name):
             data = request.get_json()
             new_business_id = 1
             business_id = len(businesses) + 1
+            if data['name'] in businesses:
+                return jsonify({"message": "Business name already exists." +  
+                        " Create another one"})
             new_business = {"business_id":business_id, 
                 "user_id":current_user,
                 "name":data['name'], "location":data['location'], 
                 "web_address":data['web_address'],
                 "category":data['category']}
-            businesses["business_id"] = new_business
+            businesses[data["name"]] = new_business
             return jsonify({"message" : "Business created successfully"}), 201
 
         if request.method == 'GET':
             return jsonify(businesses), 200
         return jsonify({'message' : 'Invalid input'})
 
-    @app.route('/api/v1/business/<business_id>', methods=[
+    @app.route('/api/v1/business/<int:business_id>', methods=[
         'GET', 'PUT', 'DELETE'])
+      
     def fn_business(business_id):
-        data = request.get_json()
-        single_business = businesses[data['business_id']['name']]
+        """Find a single business by ID"""
+        single_business = {}
         current_user = "1"
+        data = request.get_json()
+        
+        for business in businesses.values():
+            if business['business_id'] == int(business_id):
+                single_business = business
+            if not single_business:
+                return jsonify({"message" : "Business not found"}), 404
 
-        if not single_business:
-            return jsonify({"message" : "Business not found"}), 404
-
-        # Find a single business by business_id
+        # Get one business
         if request.method == 'GET':
             return jsonify(single_business)
-        
+             
         # Update business details
         if request.method == 'PUT':
             single_business['user_id'] = current_user
@@ -64,7 +72,7 @@ def create_app(config_name):
         
         # Delete a business
         if request.method == 'DELETE':
-            businesses.pop(single_business['business_id'])
+            businesses.pop(single_business['name'])
             return jsonify({"message" : "Business deleted successfully"}), 200
             
     return app
