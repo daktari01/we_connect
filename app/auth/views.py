@@ -22,10 +22,10 @@ def token_required(fn):
             return jsonify({'message' : 'Token is missing'}), 401
         try:
             data = jwt.decode(token, os.getenv('SECRET_KEY'))
-            current_user = users[data.username]
+            current_user = users[data['username']]['username']
         except:
             return jsonify({'message' : 'Token is invalid!'}), 401
-        return f(current_user, *args, **kwargs)
+        return fn(current_user, *args, **kwargs)
     return decorated
 
 @auth.route('/register', methods=['POST'])
@@ -40,13 +40,14 @@ def register_user():
     return jsonify({"message" : "User created"}), 201
 
 @auth.route('/users', methods=['GET'])
-def get_all_users():
+@token_required
+def get_all_users(current_user):
     """Get all users"""
     return jsonify(users), 200
 
 @auth.route('/login', methods=['POST'])
 def login():
-    """Autheniticate user and allow or deny user access"""
+    """Authenticate user and allow or deny user access"""
     autho = request.get_json()
     # Check if required login information is missing
     if not autho['username'] or not autho['password']:
@@ -69,7 +70,18 @@ def login():
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
 
 
-@auth.route('/reset_password', methods=['POST'])
-def reset_password():
-    # Code to reset password
-    pass
+@auth.route('/reset-password', methods=['POST'])
+@token_required
+def reset_password(current_user):
+    """Reset user password"""
+    data = request.get_json()
+    current_user.password = generate_password_hash(data['password'])
+    return jsonify({"message" : "Password reset successfully"})
+
+@auth.route('/logout', methods=['POST'])
+@token_required
+def logot(current_user):
+    """Log user out"""
+    current_user.token = None
+    return jsonify({"message": "You are now logged out"})
+    

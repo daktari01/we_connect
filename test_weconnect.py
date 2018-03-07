@@ -13,6 +13,7 @@ class TestAuthentication(unittest.TestCase):
         self.login_user = {"username" : "test_user", "password" : "Test123"}
         self.test_user = {"username" : "test_user", "password" : "Test123"}
         self.test_business = {"name" : "Andela Kenya", 
+                                # "user_id": current_user.user_id,
                                 "location" : "Nairobi, Kenya", 
                                 "web_address" : "www.andela.com", 
                                 "category" : "IT"}
@@ -20,7 +21,8 @@ class TestAuthentication(unittest.TestCase):
             data=json.dumps(self.login_user), 
             content_type='application/json')
         to_response = self.client().post('/api/v1/auth/login', 
-            data=json.dumps(self.login_user), headers={"content-type":'application/json'})
+            data=json.dumps(self.login_user), 
+            headers={"content-type":'application/json'})
         self.token = json.loads(to_response.data.decode())
         token = self.token['token']
 
@@ -60,6 +62,10 @@ class TestAuthentication(unittest.TestCase):
         """Test api can get all businesses"""
         response = self.client().get('/api/v1/businesses')
         self.assertEqual(response.status_code, 200)
+
+    def test_get_one_business(self):
+        """Test api can get one business"""
+        pass
         
     
 
