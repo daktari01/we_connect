@@ -21,6 +21,11 @@ class TestAuthentication(unittest.TestCase):
                                 "location" : "Nairobi, Kenya", 
                                 "web_address" : "www.andela.com", 
                                 "category" : "IT"}
+        self.review_business = {"name" : "CocaCola", 
+                                "user_id": current_user,
+                                "location" : "Austin, TX", 
+                                "web_address" : "www.cocacola.com", 
+                                "category" : "Food"}
         self.client().post('/api/v1/auth/register', 
             data=json.dumps(self.login_user), 
             content_type='application/json')
@@ -137,6 +142,22 @@ class TestAuthentication(unittest.TestCase):
         """Test api can delete a business"""
         response = self.client().delete('/api/v1/business/1')
         self.assertEqual(response.status_code, 200)
+
+    def test_user_can_post_and_view_review(self):
+        """Test that a user can post a review for a business"""
+        self.client().post('/api/v1/businesses', 
+            data=json.dumps(self.review_business), 
+            headers={'content-type':'application/json', 
+                    'x-access-token':self.token})
+        new_rev = {"review_title": "Test review", "review_text":"Lorem ipsum"}
+        response = self.client().post('/api/v1/business/1/reviews', 
+            data=json.dumps(new_rev), 
+            headers={'content-type':'application/json', 
+                    'x-access-token':self.token})
+        self.assertIn("Review posted successfully", str(response.data))
+        self.assertAlmostEqual(response.status_code, 200)
+        view_response = self.client().get('/api/v1/business/1/reviews')
+        self.assertEqual(view_response.status_code, 200)
     
 
 if __name__ == "__main__":

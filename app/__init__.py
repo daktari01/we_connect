@@ -74,6 +74,40 @@ def create_app(config_name):
         if request.method == 'DELETE':
             businesses.pop(single_business['name'])
             return jsonify({"message" : "Business deleted successfully"}), 200
+
+    @app.route('/api/v1/business/<int:business_id>/reviews', 
+                    methods=['GET', 'POST'])
+    def fn_reviews(business_id):
+        """Post or view reviews for a business"""
+        single_business = {}
+        current_user = "1"
+        data = request.get_json()
+        
+        for business in businesses.values():
+            if business['business_id'] == int(business_id):
+                single_business = business
+            if not single_business:
+                return jsonify({"message" : "Business not found"}), 404
+
+        # Post a review for a business
+        if request.method == 'POST':
+            biz_id = single_business['business_id']
+            rev_id = 1
+            review_id = rev_id + 1
+            new_review = {"review_id":review_id, "user_id":current_user, 
+                            "business_id":biz_id, 
+                            "review_title":data['review_title'],
+                            "review_text":data['review_text']}
+            reviews['review_id'] = new_review
+            return jsonify({"message": "Review posted successfully"})
+
+        # Get all reviews for a business
+        if request.method == 'GET':
+            # business_review = {}
+            # for biz_review in reviews:
+            #     if reviews['business_id'] == int(business_id):
+            #         business_review.update(biz_review)
+            return jsonify(reviews) 
+              
             
     return app
-
