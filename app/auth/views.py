@@ -75,11 +75,11 @@ def reset_password():
     """Reset user password"""
     data = request.get_json()
     users[data["username"]]["password"] = generate_password_hash(data['password'])
-    return jsonify({"message" : "Password reset successfully"})
+    return jsonify({"message" : "Password reset successful"})
 
 @auth.route('/logout', methods=['POST'])
-def logout(current_user):
+def logout():
     """Log user out"""
-    current_user.token = None
+    # Get the token and make it None
     return jsonify({"message": "You are now logged out"})
     

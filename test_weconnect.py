@@ -14,6 +14,8 @@ class TestAuthentication(unittest.TestCase):
         self.login_user = {"username" : "test_user", "password" : "Test123"}
         self.test_user = {"username" : "test_user", "password" : "Test123"}
         self.test1_user = {"username" : "test1_user", "password" : "Test123"}
+        self.reset_user = {"username" : "reset_user", "password" : "Reset123"}
+        self.login_user = {"username" : "login_user", "password" : "Log123"}
         self.test_business = {"name" : "Andela Kenya", 
                                 "user_id": current_user,
                                 "location" : "Nairobi, Kenya", 
@@ -53,21 +55,33 @@ class TestAuthentication(unittest.TestCase):
 
     def test_login_user(self):
         """Test api can login registered user"""
-        self.client().post('/api/v1/auth/login', 
-            data=json.dumps(self.test_user), 
+        self.client().post('/api/v1/auth/register', 
+            data=json.dumps(self.login_user), 
             headers={'content-type':'application/json', 
                     'x-access-token':self.token})
         response = self.client().post('/api/v1/auth/login', 
-            data=json.dumps(self.test_user), content_type='application/json')
+            data=json.dumps(self.login_user), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_reset_password(self):
         """Test api can reset user password"""
-        pass
+        self.client().post('/api/v1/auth/register', 
+            data=json.dumps(self.reset_user), 
+            content_type='application/json')
+        response = self.client().post('/api/v1/auth/reset-password', 
+            data=json.dumps(self.reset_user), 
+            content_type='application/json')
+        self.reset_user['password'] = "ResetAgain12"
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Password reset successful", str(response.data))
+        
 
     def test_logout_user(self):
         """Test api can logout user"""
-        pass
+        response = self.client().post('/api/v1/auth/logout', 
+            data=json.dumps(self.login_user), content_type='application/json')
+        self.assertIn("You are now logged out", str(response.data))
+        self.assertEqual(response.status_code, 200)
 
     def test_register_and_get_business(self):
         """Test api can register new business"""
