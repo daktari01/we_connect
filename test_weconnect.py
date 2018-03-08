@@ -146,10 +146,6 @@ class TestAuthentication(unittest.TestCase):
 
     def test_user_can_post_review(self):
         """Test that a user can post a review for a business"""
-        self.business_i.businesses.clear()
-        self.client().post('/api/v1/businesses', 
-            data=json.dumps(self.review_business), 
-            headers={'content-type':'application/json'})
         new_rev = {"review_title": "Test review", "review_text":"Lorem ipsum"}
         response = self.client().post('/api/v1/business/1/reviews', 
             data=json.dumps(new_rev), 

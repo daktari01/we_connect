@@ -6,3 +6,6 @@ omit =
     *manage.py*
     */migrations/*
     */venv/*
+    */instance/*
+    *config.py*
+    */auth/__init__.py*
