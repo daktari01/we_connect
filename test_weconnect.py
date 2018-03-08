@@ -8,7 +8,6 @@ from app.models import User, Business, Review
 class TestAuthentication(unittest.TestCase):
     """Class to test API authentication"""
 
-
     def setUp(self):
         self.app = create_app(config_name="testing")
         create_app.testing = True
@@ -96,29 +95,29 @@ class TestAuthentication(unittest.TestCase):
 
     def test_register_and_get_business(self):
         """Test api can register new business"""
-        response = self.client().post('/api/v1/businesses', 
+        response = self.client().post('/api/v1/businesses/', 
             data=json.dumps(self.test_business), 
             headers={'content-type':'application/json'})
         self.assertEqual(response.status_code, 201)
         self.assertIn('Business created', str(response.data))
-        response_ = self.client().get('/api/v1/business/1')
+        response_ = self.client().get('/api/v1/businesses/1')
 
         print(response_)
         self.assertEqual(response_.status_code, 200)
 
     def test_cannot_create_duplicate_business(self):
         """Test api cannot create duplicate business"""
-        response = self.client().post('/api/v1/businesses', 
+        response = self.client().post('/api/v1/businesses/', 
             data=json.dumps(self.test_business), 
             headers={'content-type':'application/json'})
-        dup_response = self.client().post('/api/v1/businesses', 
+        dup_response = self.client().post('/api/v1/businesses/', 
             data=json.dumps(self.test_business), 
             headers={'content-type':'application/json'})
         self.assertIn("Business name already exists.", str(dup_response.data))
 
     def test_get_businesses(self):
         """Test api can get all businesses"""
-        response = self.client().get('/api/v1/businesses')
+        response = self.client().get('/api/v1/businesses/')
         self.assertEqual(response.status_code, 200)
 
     def test_update_one_business(self):
@@ -128,10 +127,10 @@ class TestAuthentication(unittest.TestCase):
                                 "location" : "Nairobi, Kenya", 
                                 "web_address" : "www.andela.com", 
                                 "category" : "IT"}
-        self.client().post('/api/v1/businesses', 
+        self.client().post('/api/v1/businesses/', 
             data=json.dumps(test_business), 
             headers={'content-type':'application/json'})
-        response = self.client().put('/api/v1/business/1', 
+        response = self.client().put('/api/v1/businesses/1', 
             data=json.dumps(test_business), 
             headers={'content-type':'application/json'})
         test_business['name'] = "Google"
@@ -141,18 +140,18 @@ class TestAuthentication(unittest.TestCase):
 
     def test_delete_one_business(self):
         """Test api can delete a business"""
-        response = self.client().delete('/api/v1/business/1')
+        response = self.client().delete('/api/v1/businesses/1')
         self.assertEqual(response.status_code, 200)
 
     def test_user_can_post_review(self):
         """Test that a user can post a review for a business"""
         new_rev = {"review_title": "Test review", "review_text":"Lorem ipsum"}
-        response = self.client().post('/api/v1/business/1/reviews', 
+        response = self.client().post('/api/v1/businesses/1/reviews', 
             data=json.dumps(new_rev), 
             headers={'content-type':'application/json'})
         self.assertIn("Review posted successfully", str(response.data))
         self.assertEqual(response.status_code, 200)
-        view_response = self.client().get('/api/v1/business/1/reviews')
+        view_response = self.client().get('/api/v1/businesses/1/reviews')
         self.assertEqual(view_response.status_code, 200)
 
     def tearDown(self):

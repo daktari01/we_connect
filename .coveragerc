@@ -8,4 +8,4 @@ omit =
     */venv/*
     */instance/*
     *config.py*
-    */auth/__init__.py*
+    *__init__.py*
