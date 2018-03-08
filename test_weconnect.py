@@ -34,6 +34,14 @@ class TestAuthentication(unittest.TestCase):
                                 "location" : "Austin, TX", 
                                 "web_address" : "www.cocacola.com", 
                                 "category" : "Food"}
+        self.client().post('/api/v1/auth/register', 
+            data=json.dumps(self.login_user), 
+            content_type='application/json')
+        to_response = self.client().post('/api/v1/auth/login', 
+            data=json.dumps(self.login_user), 
+            headers={"content-type":'application/json'})
+        self.token = json.loads(to_response.data.decode())
+        token = self.token['token']
 
     def test_register_user(self):
         """Test api can register new user"""
@@ -79,7 +87,6 @@ class TestAuthentication(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Password reset successful", str(response.data))
         
-
     def test_logout_user(self):
         """Test api can logout user"""
         response = self.client().post('/api/v1/auth/logout', 
@@ -139,7 +146,7 @@ class TestAuthentication(unittest.TestCase):
 
     def test_user_can_post_review(self):
         """Test that a user can post a review for a business"""
-        # self.test_business.clear()
+        self.business_i.businesses.clear()
         self.client().post('/api/v1/businesses', 
             data=json.dumps(self.review_business), 
             headers={'content-type':'application/json'})
