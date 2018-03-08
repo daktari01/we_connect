@@ -95,7 +95,7 @@ class TestAuthentication(unittest.TestCase):
 
     def test_register_and_get_business(self):
         """Test api can register new business"""
-        response = self.client().post('/api/v1/businesses/', 
+        response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
             headers={'content-type':'application/json'})
         self.assertEqual(response.status_code, 201)
@@ -107,17 +107,17 @@ class TestAuthentication(unittest.TestCase):
 
     def test_cannot_create_duplicate_business(self):
         """Test api cannot create duplicate business"""
-        response = self.client().post('/api/v1/businesses/', 
+        response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
             headers={'content-type':'application/json'})
-        dup_response = self.client().post('/api/v1/businesses/', 
+        dup_response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
             headers={'content-type':'application/json'})
         self.assertIn("Business name already exists.", str(dup_response.data))
 
     def test_get_businesses(self):
         """Test api can get all businesses"""
-        response = self.client().get('/api/v1/businesses/')
+        response = self.client().get('/api/v1/businesses')
         self.assertEqual(response.status_code, 200)
 
     def test_update_one_business(self):
@@ -127,7 +127,7 @@ class TestAuthentication(unittest.TestCase):
                                 "location" : "Nairobi, Kenya", 
                                 "web_address" : "www.andela.com", 
                                 "category" : "IT"}
-        self.client().post('/api/v1/businesses/', 
+        self.client().post('/api/v1/businesses', 
             data=json.dumps(test_business), 
             headers={'content-type':'application/json'})
         response = self.client().put('/api/v1/businesses/1', 

@@ -13,7 +13,7 @@ review = Review()
 business_i = Business()
 reviews_i = Review()
 
-@busy.route('/', methods=['POST', 'GET'])
+@busy.route('/businesses', methods=['POST', 'GET'])
 def fn_businesses():
     """Create business and get all businesses"""
     
@@ -36,7 +36,7 @@ def fn_businesses():
         return jsonify(business_i.businesses), 200
     return jsonify({'message' : 'Invalid input'})
 
-@busy.route('/<int:business_id>', methods=[
+@busy.route('/businesses/<int:business_id>', methods=[
     'GET', 'PUT', 'DELETE'])
 def fn_business(business_id):
     """Find a single business by ID"""
@@ -51,7 +51,6 @@ def fn_business(business_id):
 
     # Get one business
     if request.method == 'GET':
-        print(single_business)
         return jsonify(single_business)
             
     # Update business details
@@ -69,7 +68,7 @@ def fn_business(business_id):
         business_i.businesses.pop(single_business['name'])
         return jsonify({"message" : "Business deleted successfully"}), 200
 
-@busy.route('/<int:business_id>/reviews', 
+@busy.route('/businesses/<int:business_id>/reviews', 
                 methods=['GET', 'POST'])
 def fn_reviews(business_id):
     """Post or view reviews for a business"""

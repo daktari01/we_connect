@@ -22,6 +22,6 @@ def create_app(config_name):
 
     # Register the busy blueprint
     from .businesses import busy as busy_blueprint
-    app.register_blueprint(busy_blueprint, url_prefix='/api/v1/businesses')
+    app.register_blueprint(busy_blueprint, url_prefix='/api/v1')
               
     return app
