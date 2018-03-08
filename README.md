@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/daktari01/we_connect/badge.svg?branch=master)](https://coveralls.io/github/daktari01/we_connect?branch=master)
 
 ## Introduction
-WeConnect is an application where users submit reviews about businesses.
+WeConnect is an application where users and busibesses interract. A user is able to create a business profile, from which other users can give reviews about that business.
 
 ## The Interface
 1. [Home Page](https://daktari01.github.io/we_connect/designs/UI/index.html)
@@ -15,5 +15,58 @@ WeConnect is an application where users submit reviews about businesses.
 6. [Register business](https://daktari01.github.io/we_connect/designs/UI/register_business.html)
 7. Add Review: Click on the "Add Review" button either on the search items returned on the dashboard or on the business profile.
 8. [Log Out](https://daktari01.github.io/we_connect/designs/UI/login.html) Takes the user to the login page.
+
+## Getting Started
+The following instructions will get you a copy of WeConnect up and running on your local machine for development and testing purposes. 
+
+## Prerequisites
+WeConnect application will require the following:   
+- A computer running any distribution of Unix or Mac.   
+If you are using Windows, liase with your system admin to help you in the installation of WeConnect.
+- Python 3.4 or higher   
+- Pip
+- Git
+- Virtualenv
+
+## Installation
+1. Clone the repoitory by running the following command on your terminal    
+`git clone https://github.com/daktari01/we_connect.git`   
+2. Navigate into the project folder   
+`cd we_connect`  
+3. Create a virtual environment and activate it   
+`virtualenv venv`   
+`source venv/bin/activate`   
+4. Install the requirements   
+`pip install -r requirements.txt`   
+5. Launch the application   
+`python3 run.py`   
+
+## Run The Tests
+`nosetests --with-coverage`
+
+## API Endpoints
+
+|URL|HTTP Method|Description|
+|:--------|:--------|:-------|
+|`/api/auth/register`|POST|Create a user account|
+|`/api/auth/login`|POST|Log user in|
+|`/api/auth/logout`|POST|Log user out|
+|`/api/auth/reset-password`|POST|Reset user password|
+|`/api/businesses/`|POST|Register a business|
+|`/api/businesses/<businessId>`|PUT|Update a business profile|
+|`/api/businesses/<businessId>`|DELETE|Remove a business|
+|` /api/businesses/`|GET|Retrieve all businesses|
+|`/api/businesses/<businessId>`|GET|Retrieve a business|
+|`/api/businesses/<businessId>/reviews`|POST|Add a review for a business|
+|`/api/businesses/<businessId>/reviews`|GET|Retrieve (a) review(s) for a business|
+
+## Sample Requests
+1. Register a user   
+![Register a user](Isolated.png "Title")   
+2. Log a user in   
+![Log a user in](Isolated.png "Title")
+3. Register a business
+![Register business](Isolated.png "Title")
+
 
 
