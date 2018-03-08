@@ -1,3 +1,5 @@
+sudo: true
+
 language: python
 python:
   - "2.7"
@@ -9,9 +11,25 @@ python:
   - "3.6-dev"  # 3.6 development branch
   - "3.7-dev"  # 3.7 development branch
 # command to install dependencies
+
+env:
+  - FLASK=0.12.2
+
 install:
+
+  - pip install python-coveralls
+  - pip install coveralls
+  - pip install coverage
+  - pip install nose
+  - pip install Flask==$FLASK
+
   - pip install -r requirements.txt
+
 # command to run tests
-script:
-  - nosetests
+script: nosetests --with-coverage
+
+after_success:
+  - coveralls
+
+
 
