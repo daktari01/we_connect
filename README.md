@@ -60,13 +60,21 @@ If you are using Windows, liase with your system admin to help you in the instal
 |`/api/businesses/<businessId>/reviews`|POST|Add a review for a business|
 |`/api/businesses/<businessId>/reviews`|GET|Retrieve (a) review(s) for a business|
 
-## Sample Requests
-1. Register a user   
-![Register a user](Isolated.png "Title")   
-2. Log a user in   
-![Log a user in](Isolated.png "Title")
-3. Register a business
-![Register business](Isolated.png "Title")
+## Built With
+- Bootstrap 4.0
+- Flask RESTful
+
+## How to Contribute
+1. Fork the repository to your Github
+2. Create a branch
+3. Make changes
+4. Create a pull request
+
+## Licence
+The software is protected under [MIT License](https://opensource.org/licenses/MIT)
+
+## Contributors
+- [James Dindi](https://github.com/daktari01)
 
 
 
