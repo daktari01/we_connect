@@ -7,8 +7,12 @@ from functools import wraps
 
 # Local imports
 from . import auth
+from app.models import User, Business, Review
 
-users = {}
+# Create instances of 'model' classes
+user = User()
+business = Business()
+review = Review()
 
 def token_required(fn):
     """Decorator to require authentication token"""
@@ -29,21 +33,13 @@ def token_required(fn):
 
 @auth.route('/register', methods=['POST'])
 def register_user():
-    """Add a new user to the system"""
-    data = request.get_json()
-    hashed_password = generate_password_hash(data['password'])
-    r_user_id = str(uuid.uuid4())
-    if data['username'] in users:
-        return jsonify({"message": "User already exists. Please login"})
-    new_user = {"user_id":r_user_id, "username":data['username'], 
-                "password":hashed_password}
-    users[data['username']] = new_user
+    user.md_register_user()
     return jsonify({"message" : "User created"}), 201
 
 @auth.route('/users', methods=['GET'])
 def get_all_users():
     """Get all users"""
-    return jsonify(users), 200
+    return jsonify(user.users), 200
 
 @auth.route('/login', methods=['POST'])
 def login():
