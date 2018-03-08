@@ -34,14 +34,6 @@ class TestAuthentication(unittest.TestCase):
                                 "location" : "Austin, TX", 
                                 "web_address" : "www.cocacola.com", 
                                 "category" : "Food"}
-        self.client().post('/api/v1/auth/register', 
-            data=json.dumps(self.login_user), 
-            content_type='application/json')
-        to_response = self.client().post('/api/v1/auth/login', 
-            data=json.dumps(self.login_user), 
-            headers={"content-type":'application/json'})
-        self.token = json.loads(to_response.data.decode())
-        token = self.token['token']
 
     def test_register_user(self):
         """Test api can register new user"""
@@ -70,8 +62,7 @@ class TestAuthentication(unittest.TestCase):
         """Test api can login registered user"""
         self.client().post('/api/v1/auth/register', 
             data=json.dumps(self.login_user), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         response = self.client().post('/api/v1/auth/login', 
             data=json.dumps(self.login_user), content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -100,8 +91,7 @@ class TestAuthentication(unittest.TestCase):
         """Test api can register new business"""
         response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         self.assertEqual(response.status_code, 201)
         self.assertIn('Business created', str(response.data))
         response_ = self.client().get('/api/v1/business/1')
@@ -113,12 +103,10 @@ class TestAuthentication(unittest.TestCase):
         """Test api cannot create duplicate business"""
         response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         dup_response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         self.assertIn("Business name already exists.", str(dup_response.data))
 
     def test_get_businesses(self):
@@ -135,12 +123,10 @@ class TestAuthentication(unittest.TestCase):
                                 "category" : "IT"}
         self.client().post('/api/v1/businesses', 
             data=json.dumps(test_business), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         response = self.client().put('/api/v1/business/1', 
             data=json.dumps(test_business), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         test_business['name'] = "Google"
         test_business['location'] = "San Francisco, CA"
         self.assertEqual(response.status_code, 200)
@@ -151,24 +137,23 @@ class TestAuthentication(unittest.TestCase):
         response = self.client().delete('/api/v1/business/1')
         self.assertEqual(response.status_code, 200)
 
-    def test_user_can_post_and_view_review(self):
+    def test_user_can_post_review(self):
         """Test that a user can post a review for a business"""
+        # self.test_business.clear()
         self.client().post('/api/v1/businesses', 
             data=json.dumps(self.review_business), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         new_rev = {"review_title": "Test review", "review_text":"Lorem ipsum"}
         response = self.client().post('/api/v1/business/1/reviews', 
             data=json.dumps(new_rev), 
-            headers={'content-type':'application/json', 
-                    'x-access-token':self.token})
+            headers={'content-type':'application/json'})
         self.assertIn("Review posted successfully", str(response.data))
-        self.assertAlmostEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         view_response = self.client().get('/api/v1/business/1/reviews')
         self.assertEqual(view_response.status_code, 200)
 
     def tearDown(self):
-        self.business_i.businesses.clear
+        self.business_i.businesses.clear()
         self.test1_user.clear()
         self.reset_user.clear()
         self.login_user.clear()

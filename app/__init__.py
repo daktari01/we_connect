@@ -28,7 +28,6 @@ def create_app(config_name):
         if request.method == 'POST':
             current_user = "1"
             data = request.get_json()
-            # new_business_id = 1
             business_id = len(business_i.businesses) + 1
             if data['name'] in business_i.businesses:
                 return jsonify({"message": "Business name already exists." +  
@@ -51,20 +50,21 @@ def create_app(config_name):
         """Find a single business by ID"""
         single_business = {}
         current_user = "1"
-        data = request.get_json()
         
         for business in business_i.businesses.values():
-            if business['business_id'] == business_id:
+            if business.get('business_id') == business_id:
                 single_business = business
-            if not single_business:
+            else:
                 return jsonify({"message" : "Business not found"}), 404
 
         # Get one business
         if request.method == 'GET':
+            print(single_business)
             return jsonify(single_business)
              
         # Update business details
         if request.method == 'PUT':
+            data = request.get_json()
             single_business['user_id'] = current_user
             single_business['name'] = data['name']
             single_business['location'] = data['location']
