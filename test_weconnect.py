@@ -3,19 +3,27 @@ import unittest
 import json
 from app import create_app
 
+from app.models import User, Business, Review
+
 class TestAuthentication(unittest.TestCase):
     """Class to test API authentication"""
+
 
     def setUp(self):
         self.app = create_app(config_name="testing")
         create_app.testing = True
+        self.user = User()
+        self.business_i = Business()
         current_user = "1"
         self.client = self.app.test_client
-        self.login_user = {"username" : "test_user", "password" : "Test123"}
-        self.test_user = {"username" : "test_user", "password" : "Test123"}
-        self.test1_user = {"username" : "test1_user", "password" : "Test123"}
-        self.reset_user = {"username" : "reset_user", "password" : "Reset123"}
-        self.login_user = {"username" : "login_user", "password" : "Log123"}
+        self.test_user = {"username" : "test_user", "password" : "Test123", 
+                        "name": "Test User", "email":"test_user@weconnect.com"}
+        self.test1_user = {"username" : "test1_user", "password" : "Test123", 
+                    "name": "Test User1", "email":"test_user1@weconnect.com"}
+        self.reset_user = {"username" : "reset_user", "password" : "Reset123", 
+                    "name": "Reset User", "email":"reset_user@weconnect.com"}
+        self.login_user = {"username" : "login_user", "password" : "Log123", 
+                    "name": "Login User", "email":"login_user@weconnect.com"}
         self.test_business = {"name" : "Andela Kenya", 
                                 "user_id": current_user,
                                 "location" : "Nairobi, Kenya", 
@@ -51,7 +59,7 @@ class TestAuthentication(unittest.TestCase):
         dup_response = self.client().post('/api/v1/auth/register', 
             data=json.dumps(self.test_user), 
             content_type='application/json')
-        self.assertIn('User already exists', str(dup_response.data))
+        self.assertIn('Username already exists', str(dup_response.data))
 
     def test_get_users(self):
         """Test api can get all users"""
@@ -145,6 +153,7 @@ class TestAuthentication(unittest.TestCase):
 
     def test_user_can_post_and_view_review(self):
         """Test that a user can post a review for a business"""
+        self.business_i.businesses.clear()
         self.client().post('/api/v1/businesses', 
             data=json.dumps(self.review_business), 
             headers={'content-type':'application/json', 
@@ -158,6 +167,8 @@ class TestAuthentication(unittest.TestCase):
         self.assertAlmostEqual(response.status_code, 200)
         view_response = self.client().get('/api/v1/business/1/reviews')
         self.assertEqual(view_response.status_code, 200)
+
+    
     
 
 if __name__ == "__main__":

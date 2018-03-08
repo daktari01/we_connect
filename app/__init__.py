@@ -4,11 +4,14 @@ import uuid
 from flask import Flask, request, jsonify, abort, make_response
 
 # Local imports
+
 from config import app_config
 from .auth.views import token_required
+from . import models
+from app.models import Business, Review
 
-businesses = {}
-reviews = {}
+business_i = Business()
+reviews_i = Review()
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
@@ -25,9 +28,9 @@ def create_app(config_name):
         if request.method == 'POST':
             current_user = "1"
             data = request.get_json()
-            new_business_id = 1
-            business_id = len(businesses) + 1
-            if data['name'] in businesses:
+            # new_business_id = 1
+            business_id = len(business_i.businesses) + 1
+            if data['name'] in business_i.businesses:
                 return jsonify({"message": "Business name already exists." +  
                         " Create another one"})
             new_business = {"business_id":business_id, 
@@ -35,11 +38,11 @@ def create_app(config_name):
                 "name":data['name'], "location":data['location'], 
                 "web_address":data['web_address'],
                 "category":data['category']}
-            businesses[data["name"]] = new_business
+            business_i.businesses[data["name"]] = new_business
             return jsonify({"message" : "Business created successfully"}), 201
 
         if request.method == 'GET':
-            return jsonify(businesses), 200
+            return jsonify(business_i.businesses), 200
         return jsonify({'message' : 'Invalid input'})
 
     @app.route('/api/v1/business/<int:business_id>', methods=[
@@ -51,7 +54,7 @@ def create_app(config_name):
         current_user = "1"
         data = request.get_json()
         
-        for business in businesses.values():
+        for business in business_i.businesses.values():
             if business['business_id'] == int(business_id):
                 single_business = business
             if not single_business:
@@ -72,7 +75,7 @@ def create_app(config_name):
         
         # Delete a business
         if request.method == 'DELETE':
-            businesses.pop(single_business['name'])
+            business_i.businesses.pop(single_business['name'])
             return jsonify({"message" : "Business deleted successfully"}), 200
 
     @app.route('/api/v1/business/<int:business_id>/reviews', 
@@ -81,33 +84,32 @@ def create_app(config_name):
         """Post or view reviews for a business"""
         single_business = {}
         current_user = "1"
-        data = request.get_json()
         
-        for business in businesses.values():
-            if business['business_id'] == int(business_id):
+        for business in business_i.businesses.values():
+            if business['business_id'] == business_id:
                 single_business = business
             if not single_business:
                 return jsonify({"message" : "Business not found"}), 404
-
         # Post a review for a business
         if request.method == 'POST':
+            data = request.get_json()
             biz_id = single_business['business_id']
-            rev_id = 1
-            review_id = rev_id + 1
+            review_id = len(reviews_i.reviews)+1
             new_review = {"review_id":review_id, "user_id":current_user, 
                             "business_id":biz_id, 
                             "review_title":data['review_title'],
                             "review_text":data['review_text']}
-            reviews['review_id'] = new_review
+            reviews_i.reviews['review_id'] = new_review
             return jsonify({"message": "Review posted successfully"})
 
         # Get all reviews for a business
         if request.method == 'GET':
-            # business_review = {}
-            # for biz_review in reviews:
-            #     if reviews['business_id'] == int(business_id):
-            #         business_review.update(biz_review)
-            return jsonify(reviews) 
+            business_review = {}
+            for biz_review in reviews_i.reviews.values():
+               
+                if biz_review['business_id'] == business_id:
+                    business_review.update(biz_review)
+            return jsonify(business_review) 
               
-            
+  
     return app
