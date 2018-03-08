@@ -47,7 +47,6 @@ def create_app(config_name):
 
     @app.route('/api/v1/business/<int:business_id>', methods=[
         'GET', 'PUT', 'DELETE'])
-      
     def fn_business(business_id):
         """Find a single business by ID"""
         single_business = {}
@@ -55,7 +54,7 @@ def create_app(config_name):
         data = request.get_json()
         
         for business in business_i.businesses.values():
-            if business['business_id'] == int(business_id):
+            if business['business_id'] == business_id:
                 single_business = business
             if not single_business:
                 return jsonify({"message" : "Business not found"}), 404
@@ -111,5 +110,5 @@ def create_app(config_name):
                     business_review.update(biz_review)
             return jsonify(business_review) 
               
-  
+
     return app

@@ -153,7 +153,6 @@ class TestAuthentication(unittest.TestCase):
 
     def test_user_can_post_and_view_review(self):
         """Test that a user can post a review for a business"""
-        self.business_i.businesses.clear()
         self.client().post('/api/v1/businesses', 
             data=json.dumps(self.review_business), 
             headers={'content-type':'application/json', 
@@ -168,8 +167,13 @@ class TestAuthentication(unittest.TestCase):
         view_response = self.client().get('/api/v1/business/1/reviews')
         self.assertEqual(view_response.status_code, 200)
 
-    
-    
+    def tearDown(self):
+        self.business_i.businesses.clear
+        self.test1_user.clear()
+        self.reset_user.clear()
+        self.login_user.clear()
+        self.test_business.clear()
+        self.review_business.clear() 
 
 if __name__ == "__main__":
     unittest.main()
