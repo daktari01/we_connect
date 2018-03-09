@@ -1,7 +1,6 @@
-# api/__init__.py
+# app/__init__.py
 
-import uuid
-from flask import Flask, request, jsonify, abort, make_response
+from flask import Flask
 
 # Local imports
 
