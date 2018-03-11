@@ -44,15 +44,16 @@ def fn_business(business_id):
     current_user = "1"
     
     for business in business_i.businesses.values():
-        if business.get('business_id') == business_id:
-            single_business = business
-        else:
-            return jsonify({"message" : "Business not found"}), 404
+        print(business_id)
+        if business['business_id'] == business_id:
+            single_business = business  
+        # single_business = {"message" : "Business not found"}
 
     # Get one business
     if request.method == 'GET':
-        return jsonify(single_business)
-            
+        if single_business:
+            return jsonify(single_business)
+        return jsonify({"message" : "Business not found"})
     # Update business details
     if request.method == 'PUT':
         data = request.get_json()
