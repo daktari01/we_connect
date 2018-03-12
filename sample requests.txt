@@ -1,0 +1,15 @@
+User registration
+{
+    "username":"morris",
+    "name" : "Morris Maluni",
+    "email":"maluni@weconnect.com",
+    "password":"maluni123",
+    "confirm_password":"maluni123"
+}
+
+User login
+{
+    "username":"morris",
+    "password":"maluni123"
+
+}

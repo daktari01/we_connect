@@ -88,7 +88,7 @@ def login():
     # Check if password given matches password in WeConnect
     if check_password_hash(user.users[data['username']]["password"], 
                 data['password']):
-        token = jwt.encode({'user_id' : user.users[data['username']]["user_id"], 
+        token = jwt.encode({'username' : user.users[data['username']]["username"], 
             'exp' : datetime.datetime.utcnow() + datetime.timedelta(
                 minutes=30)}, os.getenv('SECRET_KEY'))
         return jsonify({'token' : token.decode('UTF-8')}), 200
