@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 import os
 import jwt
+import datetime
 from functools import wraps 
 
 # Local imports
@@ -25,7 +26,7 @@ def token_required(fn):
             return jsonify({'message' : 'Token is missing'}), 401
         try:
             data = jwt.decode(token, os.getenv('SECRET_KEY'))
-            current_user = user.users[data['username']]['username']
+            current_user = user.users[data['username']]
         except:
             return jsonify({'message' : 'Token is invalid!'}), 401
         return fn(current_user, *args, **kwargs)
@@ -35,20 +36,34 @@ def token_required(fn):
 def register_user():
     """Add a new user to the system"""
     data = request.get_json()
-    hashed_password = generate_password_hash(data['password'])
     r_user_id = str(uuid.uuid4())
+    email_error = {}
+    password_error = {}
+    # Check for duplicate username entry
     if data['username'] in user.users:
         return jsonify({"message": "Username already exists." \
                     " Try another one"})
-    if data['email'] in user.users:
-        return jsonify({"message": "Email already exists. Try another one"})
+    # Check for duplicate email entry 
+    for one_user in user.users.values():
+        if one_user.get('email') == data['email']:
+            email_error = {"message": "Email already exists. Try another one"}
+    if email_error:
+        return jsonify(email_error)
+    # Check if password matches confirm password 
+    if data['password1'] != data['password2']:
+        password_error = {"message": "Your passwords do not match. Try again"}
+    if password_error:
+        return jsonify(password_error)
+    hashed_password = generate_password_hash(data['password1'])
+    # Create user if everything is OK
     new_user = {"user_id":r_user_id, "username":data['username'], 
                 "name":data['name'], "email":data['email'],
                 "password":hashed_password}
     user.users[data['username']] = new_user
-    return jsonify({"message" : "User created"}), 201
+    return jsonify({"message" : "User registered successfully"}), 201
 
 @auth.route('/users', methods=['GET'])
+@token_required
 def get_all_users():
     """Get all users"""
     return jsonify(user.users), 200
@@ -65,13 +80,16 @@ def login():
     # Check if user is not in system
     if data['username'] not in user.users:
         return make_response("WeConnect was unable to authenticate", 401, 
-                {'WWW-Authenticate' : 'Basic realm="Login required'})
+                {'WWW-Authenticate' : 'Basic realm="User not found. Register.'})
 
     # Check if password given matches password in WeConnect
     if check_password_hash(user.users[data['username']]["password"], 
                 data['password']):
-        token = jwt.encode({'user_id' : user.users[data['username']]["user_id"]},
-        os.getenv('SECRET_KEY'))
+        # token = jwt.encode({'user_id' : user.users[data['username']]["user_id"]},
+        # os.getenv('SECRET_KEY'))
+        token = jwt.encode({'user_id' : user.users[data['username']]["user_id"], 
+            'exp' : datetime.datetime.utcnow() + datetime.timedelta(
+                minutes=30)}, os.getenv('SECRET_KEY'))
         return jsonify({'token' : token.decode('UTF-8')}), 200
     # Check if authentication fails
     return make_response("WeConnect was unable to authenticate", 401, 
@@ -79,6 +97,7 @@ def login():
 
 
 @auth.route('/reset-password', methods=['POST'])
+@token_required
 def reset_password():
     """Reset user password"""
     data = request.get_json()
@@ -87,6 +106,7 @@ def reset_password():
     return jsonify({"message" : "Password reset successful"})
 
 @auth.route('/logout', methods=['POST'])
+@token_required
 def logout():
     """Log user out"""
     # Get the token and make it None
