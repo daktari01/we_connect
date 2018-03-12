@@ -16,13 +16,17 @@ class TestAuthentication(unittest.TestCase):
         current_user = "1"
         self.client = self.app.test_client
         self.test_user = {"username" : "test_user", "password" : "Test123", 
-                        "name": "Test User", "email":"test_user@weconnect.com"}
+                        "name": "Test User", "email":"test_user@weconnect.com",
+                         "confirm_password" : "Test123"}
         self.test1_user = {"username" : "test1_user", "password" : "Test123", 
-                    "name": "Test User1", "email":"test_user1@weconnect.com"}
+                    "name": "Test User1", "email":"test_user1@weconnect.com", 
+                    "confirm_password" : "Test123"}
         self.reset_user = {"username" : "reset_user", "password" : "Reset123", 
-                    "name": "Reset User", "email":"reset_user@weconnect.com"}
+                    "name": "Reset User", "email":"reset_user@weconnect.com", 
+                    "confirm_password" : "Reset123"}
         self.login_user = {"username" : "login_user", "password" : "Log123", 
-                    "name": "Login User", "email":"login_user@weconnect.com"}
+                    "name": "Login User", "email":"login_user@weconnect.com", 
+                    "confirm_password" : "Log123"}
         self.test_business = {"name" : "Andela Kenya", 
                                 "user_id": current_user,
                                 "location" : "Nairobi, Kenya", 
@@ -48,7 +52,7 @@ class TestAuthentication(unittest.TestCase):
             data=json.dumps(self.test1_user), 
             content_type='application/json')
         self.assertEqual(response.status_code, 201)
-        self.assertIn('User created', str(response.data))
+        self.assertIn('User registered successfully', str(response.data))
 
     def test_cannot_create_duplicate_user(self):
         """Test api cannot create duplicate user"""
