@@ -64,8 +64,11 @@ def register_user():
 
 @auth.route('/users', methods=['GET'])
 @token_required
-def get_all_users():
+def get_all_users(current_user):
     """Get all users"""
+    if not current_user:
+        return jsonify({'message': 
+            'You are not allowed to perform this function'}), 401
     return jsonify(user.users), 200
 
 @auth.route('/login', methods=['POST'])
@@ -85,8 +88,6 @@ def login():
     # Check if password given matches password in WeConnect
     if check_password_hash(user.users[data['username']]["password"], 
                 data['password']):
-        # token = jwt.encode({'user_id' : user.users[data['username']]["user_id"]},
-        # os.getenv('SECRET_KEY'))
         token = jwt.encode({'user_id' : user.users[data['username']]["user_id"], 
             'exp' : datetime.datetime.utcnow() + datetime.timedelta(
                 minutes=30)}, os.getenv('SECRET_KEY'))
@@ -98,7 +99,7 @@ def login():
 
 @auth.route('/reset-password', methods=['POST'])
 @token_required
-def reset_password():
+def reset_password(current_user):
     """Reset user password"""
     data = request.get_json()
     user.users[data["username"]]["password"] = generate_password_hash(
@@ -107,7 +108,7 @@ def reset_password():
 
 @auth.route('/logout', methods=['POST'])
 @token_required
-def logout():
+def logout(current_user):
     """Log user out"""
     # Get the token and make it None
     return jsonify({"message": "You are now logged out"})
