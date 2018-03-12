@@ -50,11 +50,11 @@ def register_user():
     if email_error:
         return jsonify(email_error)
     # Check if password matches confirm password 
-    if data['password1'] != data['password2']:
+    if data['password'] != data['confirm_password']:
         password_error = {"message": "Your passwords do not match. Try again"}
     if password_error:
         return jsonify(password_error)
-    hashed_password = generate_password_hash(data['password1'])
+    hashed_password = generate_password_hash(data['password'])
     # Create user if everything is OK
     new_user = {"user_id":r_user_id, "username":data['username'], 
                 "name":data['name'], "email":data['email'],
