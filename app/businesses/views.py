@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 # Local imports
 from . import busy
 from app.models import User, Business, Review
+from app.auth.views import token_required
 
 # Create instances of 'model' classes
 user = User()
@@ -13,41 +14,39 @@ review = Review()
 business_i = Business()
 reviews_i = Review()
 
-@busy.route('/businesses', methods=['POST', 'GET'])
-def fn_businesses():
-    """Create business and get all businesses"""
+@busy.route('/businesses', methods=['POST'])
+@token_required
+def fn_create_businesses(current_user):
+    """Create business"""
+    data = request.get_json()
+    business_id = len(business_i.businesses) + 1
+    if data['name'] in business_i.businesses:
+        return jsonify({"message": "Business name already exists." +  
+                " Create another one"})
+    new_business = {"business_id":business_id, 
+        "user_id":current_user['user_id'],
+        "name":data['name'], "location":data['location'], 
+        "web_address":data['web_address'],
+        "category":data['category']}
+    business_i.businesses[data["name"]] = new_business
+    return jsonify({"message" : "Business created successfully"}), 201
     
-    if request.method == 'POST':
-        current_user = "1"
-        data = request.get_json()
-        business_id = len(business_i.businesses) + 1
-        if data['name'] in business_i.businesses:
-            return jsonify({"message": "Business name already exists." +  
-                    " Create another one"})
-        new_business = {"business_id":business_id, 
-            "user_id":current_user,
-            "name":data['name'], "location":data['location'], 
-            "web_address":data['web_address'],
-            "category":data['category']}
-        business_i.businesses[data["name"]] = new_business
-        return jsonify({"message" : "Business created successfully"}), 201
-
-    if request.method == 'GET':
-        return jsonify(business_i.businesses), 200
-    return jsonify({'message' : 'Invalid input'})
+    
+@busy.route('/businesses', methods=['GET'])
+def fn_get_businesses():
+    """Get all businesses"""
+    return jsonify(business_i.businesses), 200
 
 @busy.route('/businesses/<int:business_id>', methods=[
     'GET', 'PUT', 'DELETE'])
-def fn_business(business_id):
+@token_required
+def fn_business(current_user, business_id):
     """Find a single business by ID"""
     single_business = {}
-    current_user = "1"
     
     for business in business_i.businesses.values():
-        print(business_id)
         if business['business_id'] == business_id:
-            single_business = business  
-        # single_business = {"message" : "Business not found"}
+            single_business = business
 
     # Get one business
     if request.method == 'GET':
@@ -57,7 +56,6 @@ def fn_business(business_id):
     # Update business details
     if request.method == 'PUT':
         data = request.get_json()
-        single_business['user_id'] = current_user
         single_business['name'] = data['name']
         single_business['location'] = data['location']
         single_business['web_address'] = data['web_address']
@@ -71,10 +69,10 @@ def fn_business(business_id):
 
 @busy.route('/businesses/<int:business_id>/reviews', 
                 methods=['GET', 'POST'])
-def fn_reviews(business_id):
+@token_required
+def fn_reviews(current_user ,business_id):
     """Post or view reviews for a business"""
     single_business = {}
-    current_user = "1"
     
     for business in business_i.businesses.values():
         if business['business_id'] == business_id:
@@ -86,7 +84,7 @@ def fn_reviews(business_id):
         data = request.get_json()
         biz_id = single_business['business_id']
         review_id = len(reviews_i.reviews)+1
-        new_review = {"review_id":review_id, "user_id":current_user, 
+        new_review = {"review_id":review_id, "user_id":current_user['user_id'], 
                         "business_id":biz_id, 
                         "review_title":data['review_title'],
                         "review_text":data['review_text']}

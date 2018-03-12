@@ -11,5 +11,29 @@ User login
 {
     "username":"morris",
     "password":"maluni123"
-
 }
+
+Create business
+{
+    "name":"Andela",
+    "location":"Nairobi, Kenya",
+    "category": "Software development",
+    "web_address":"www.andela.com"
+}
+
+Business 2
+{
+    "name":"Google",
+    "location":"San Francisco, CA",
+    "category": "Web development",
+    "web_address":"www.google.com"
+}
+
+Business 3
+{
+    "name":"Cocacola",
+    "location":"Atlanta, GA",
+    "category": "Food and beverages",
+    "web_address":"www.cocacola.com"
+}
+
