@@ -8,12 +8,10 @@ from functools import wraps
 
 # Local imports
 from . import auth
-from app.models import User, Business, Review
+from app.models import User
 
 # Create instances of 'model' classes
 user = User()
-business = Business()
-review = Review()
 
 def token_required(fn):
     """Decorator to require authentication token"""

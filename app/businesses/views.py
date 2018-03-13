@@ -19,16 +19,26 @@ reviews_i = Review()
 def fn_create_businesses(current_user):
     """Create business"""
     data = request.get_json()
+    web_address_error = {}
+    business_name_error = {}
     business_id = len(business_i.businesses) + 1
-    if data['name'] in business_i.businesses:
-        return jsonify({"message": "Business name already exists." +  
-                " Create another one"})
+    for one_business in business_i.businesses.values():
+        if one_business.get('web_address') == data['web_address']:
+            web_address_error = {"message": "Web address already exists." +
+                    "Try another one"}
+        if one_business.get('name') == data['name']:
+            business_name_error = {"message": "Business name already" + 
+                    " exists. Create another one"}
+    if web_address_error:
+        return jsonify(web_address_error)
+    if business_name_error:
+        return jsonify(business_name_error)
     new_business = {"business_id":business_id, 
         "user_id":current_user['user_id'],
         "name":data['name'], "location":data['location'], 
         "web_address":data['web_address'],
         "category":data['category']}
-    business_i.businesses[data["name"]] = new_business
+    business_i.businesses[business_id] = new_business
     return jsonify({"message" : "Business created successfully"}), 201
     
     
@@ -43,7 +53,8 @@ def fn_get_businesses():
 def fn_business(current_user, business_id):
     """Find a single business by ID"""
     single_business = {}
-    
+    web_address_error = {}
+    business_name_error = {}
     for business in business_i.businesses.values():
         if business['business_id'] == business_id:
             single_business = business
@@ -56,6 +67,18 @@ def fn_business(current_user, business_id):
     # Update business details
     if request.method == 'PUT':
         data = request.get_json()
+        # Validate user input
+        for one_business in business_i.businesses.values():
+            if one_business.get('web_address') == data['web_address']:
+                web_address_error = {"message": "Web address already exists." +
+                        "Try another one"}
+            if one_business.get('name') == data['name']:
+                business_name_error = {"message": "Business name already" + 
+                        " exists. Create another one"}
+        if web_address_error:
+            return jsonify(web_address_error)
+        if business_name_error:
+            return jsonify(business_name_error)
         single_business['name'] = data['name']
         single_business['location'] = data['location']
         single_business['web_address'] = data['web_address']

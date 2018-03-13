@@ -141,6 +141,12 @@ class TestAuthentication(unittest.TestCase):
         test_business['location'] = "San Francisco, CA"
         self.assertEqual(response.status_code, 200)
         self.assertEqual(test_business['name'], "Google")
+        
+    def test_cannot_update_with_existing_business_name(self):
+        pass
+        
+    def test_cannot_update_with_existing_web_address(self):
+        pass
 
     def test_delete_one_business(self):
         """Test api can delete a business"""
@@ -157,6 +163,9 @@ class TestAuthentication(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         view_response = self.client().get('/api/v1/businesses/1/reviews')
         self.assertEqual(view_response.status_code, 200)
+        
+    def test_cannot_create_duplicate_web_address(self):
+        pass
 
     def tearDown(self):
         self.business_i.businesses.clear()
