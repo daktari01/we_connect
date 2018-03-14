@@ -21,8 +21,11 @@ class TestAuthentication(unittest.TestCase):
         self.test1_user = {"username" : "test1_user", "password" : "Test123", 
                     "name": "Test User1", "email":"test_user1@weconnect.com", 
                     "confirm_password" : "Test123"}
+        self.email_user = {"username" : "email_user", "password" : "Email123", 
+                    "name": "Email User1", "email":"test_user1@weconnect.com", 
+                    "confirm_password" : "Email123"}
         self.reset_user = {"username" : "reset_user", "password" : "Reset123", 
-                    "name": "Reset User", "email":"reset_user@weconnect.com", 
+                    "name": "Reset User", "email":"reset_user1@weconnect.com", 
                     "confirm_password" : "Reset123"}
         self.login_user = {"username" : "login_user", "password" : "Log123", 
                     "name": "Login User", "email":"login_user@weconnect.com", 
@@ -43,8 +46,8 @@ class TestAuthentication(unittest.TestCase):
         to_response = self.client().post('/api/v1/auth/login', 
             data=json.dumps(self.login_user), 
             headers={"content-type":'application/json'})
-        self.token = json.loads(to_response.data.decode())
-        token = self.token['token']
+        data = json.loads(to_response.data.decode())
+        self.token = data['token']
 
     def test_register_user(self):
         """Test api can register new user"""
@@ -63,6 +66,17 @@ class TestAuthentication(unittest.TestCase):
             data=json.dumps(self.test_user), 
             content_type='application/json')
         self.assertIn('Username already exists', str(dup_response.data))
+
+    def test_cannot_create_with_duplicate_email(self):
+        """Test api cannot register user with duplicate email"""
+        self.client().post('/api/v1/auth/register', 
+            data=json.dumps(self.test1_user), 
+            content_type='application/json')
+        response = self.client().post('/api/v1/auth/register', 
+            data=json.dumps(self.email_user), 
+            content_type='application/json')
+        self.assertIn('Email already exists. Try another one', 
+            str(response.data))
 
     def test_get_users(self):
         """Test api can get all users"""
@@ -99,14 +113,20 @@ class TestAuthentication(unittest.TestCase):
 
     def test_register_and_get_business(self):
         """Test api can register new business"""
+        self.client().post('/api/v1/auth/register', 
+            data=json.dumps(self.login_user), 
+            headers={'content-type':'application/json'})
+        token_response = self.client().post('/api/v1/auth/login', 
+            data=json.dumps(self.login_user), content_type='application/json')
+        data = json.loads(token_response.data.decode())
+        token = data['token']
         response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
-            headers={'content-type':'application/json'})
+            headers={'content-type':'application/json', 
+                'x-access-token':token})
         self.assertEqual(response.status_code, 201)
         self.assertIn('Business created', str(response.data))
         response_ = self.client().get('/api/v1/businesses/1')
-
-        print(response_)
         self.assertEqual(response_.status_code, 200)
 
     def test_cannot_create_duplicate_business(self):
@@ -143,9 +163,13 @@ class TestAuthentication(unittest.TestCase):
         self.assertEqual(test_business['name'], "Google")
         
     def test_cannot_update_with_existing_business_name(self):
+        """Test api cannot update business with duplicate business name"""
         pass
         
     def test_cannot_update_with_existing_web_address(self):
+        """
+        Test api cannot update business with duplicate business web address
+        """
         pass
 
     def test_delete_one_business(self):
@@ -165,6 +189,9 @@ class TestAuthentication(unittest.TestCase):
         self.assertEqual(view_response.status_code, 200)
         
     def test_cannot_create_duplicate_web_address(self):
+        """
+        Test api cannot create business with duplicate business web address
+        """
         pass
 
     def tearDown(self):

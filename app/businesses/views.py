@@ -87,7 +87,7 @@ def fn_business(current_user, business_id):
     
     # Delete a business
     if request.method == 'DELETE':
-        business_i.businesses.pop(single_business['name'])
+        business_i.businesses.pop(single_business['business_id'])
         return jsonify({"message" : "Business deleted successfully"}), 200
 
 @busy.route('/businesses/<int:business_id>/reviews', 
@@ -106,7 +106,7 @@ def fn_reviews(current_user ,business_id):
     if request.method == 'POST':
         data = request.get_json()
         biz_id = single_business['business_id']
-        review_id = len(reviews_i.reviews)+1
+        review_id = len(reviews_i.reviews) + 1
         new_review = {"review_id":review_id, "user_id":current_user['user_id'], 
                         "business_id":biz_id, 
                         "review_title":data['review_title'],
