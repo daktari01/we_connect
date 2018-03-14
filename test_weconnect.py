@@ -18,15 +18,15 @@ class TestAuthentication(unittest.TestCase):
         self.test_user = {"username" : "test_user", "password" : "Test123", 
                         "name": "Test User", "email":"test_user@weconnect.com",
                          "confirm_password" : "Test123"}
-        self.test1_user = {"username" : "test1_user", "password" : "Test123", 
-                    "name": "Test User1", "email":"test_user1@weconnect.com", 
-                    "confirm_password" : "Test123"}
+        # self.test1_user = {"username" : "test1_user", "password" : "Test123", 
+        #             "name": "Test User1", "email":"test_user1@weconnect.com", 
+        #             "confirm_password" : "Test123"}
         self.email_user = {"username" : "email_user", "password" : "Email123", 
-                    "name": "Email User1", "email":"test_user1@weconnect.com", 
+                    "name": "Email User1", "email":"login_user@weconnect.com", 
                     "confirm_password" : "Email123"}
-        self.reset_user = {"username" : "reset_user", "password" : "Reset123", 
-                    "name": "Reset User", "email":"reset_user1@weconnect.com", 
-                    "confirm_password" : "Reset123"}
+        # self.reset_user = {"username" : "reset_user", "password" : "Reset123", 
+        #             "name": "Reset User", "email":"reset_user1@weconnect.com", 
+        #             "confirm_password" : "Reset123"}
         self.login_user = {"username" : "login_user", "password" : "Log123", 
                     "name": "Login User", "email":"login_user@weconnect.com", 
                     "confirm_password" : "Log123"}
@@ -52,7 +52,7 @@ class TestAuthentication(unittest.TestCase):
     def test_register_user(self):
         """Test api can register new user"""
         response = self.client().post('/api/v1/auth/register', 
-            data=json.dumps(self.test1_user), 
+            data=json.dumps(self.test_user), 
             content_type='application/json')
         self.assertEqual(response.status_code, 201)
         self.assertIn('User registered successfully', str(response.data))
@@ -60,18 +60,12 @@ class TestAuthentication(unittest.TestCase):
     def test_cannot_create_duplicate_user(self):
         """Test api cannot create duplicate user"""
         response = self.client().post('/api/v1/auth/register', 
-            data=json.dumps(self.test_user), 
+            data=json.dumps(self.login_user), 
             content_type='application/json')
-        dup_response = self.client().post('/api/v1/auth/register', 
-            data=json.dumps(self.test_user), 
-            content_type='application/json')
-        self.assertIn('Username already exists', str(dup_response.data))
+        self.assertIn('Username already exists', str(response.data))
 
     def test_cannot_create_with_duplicate_email(self):
         """Test api cannot register user with duplicate email"""
-        self.client().post('/api/v1/auth/register', 
-            data=json.dumps(self.test1_user), 
-            content_type='application/json')
         response = self.client().post('/api/v1/auth/register', 
             data=json.dumps(self.email_user), 
             content_type='application/json')
@@ -80,16 +74,18 @@ class TestAuthentication(unittest.TestCase):
 
     def test_get_users(self):
         """Test api can get all users"""
-        response = self.client().get('/api/v1/auth/users')
+        response = self.client().get('/api/v1/auth/users', 
+            headers={'content-type':'application/json', 
+                'x-access-token':self.token})
         self.assertEqual(response.status_code, 200)
 
     def test_login_user(self):
         """Test api can login registered user"""
         self.client().post('/api/v1/auth/register', 
-            data=json.dumps(self.login_user), 
+            data=json.dumps(self.test_user), 
             headers={'content-type':'application/json'})
         response = self.client().post('/api/v1/auth/login', 
-            data=json.dumps(self.login_user), content_type='application/json')
+            data=json.dumps(self.test_user), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_reset_password(self):
@@ -107,7 +103,9 @@ class TestAuthentication(unittest.TestCase):
     def test_logout_user(self):
         """Test api can logout user"""
         response = self.client().post('/api/v1/auth/logout', 
-            data=json.dumps(self.login_user), content_type='application/json')
+            data=json.dumps(self.login_user), 
+            headers={'content-type':'application/json', 
+                'x-access-token':self.token})
         self.assertIn("You are now logged out", str(response.data))
         self.assertEqual(response.status_code, 200)
 
@@ -126,7 +124,7 @@ class TestAuthentication(unittest.TestCase):
                 'x-access-token':token})
         self.assertEqual(response.status_code, 201)
         self.assertIn('Business created', str(response.data))
-        response_ = self.client().get('/api/v1/businesses/1')
+        response_ = self.client().get('/api/v1/businesses')
         self.assertEqual(response_.status_code, 200)
 
     def test_cannot_create_duplicate_business(self):
@@ -196,8 +194,8 @@ class TestAuthentication(unittest.TestCase):
 
     def tearDown(self):
         self.business_i.businesses.clear()
-        self.test1_user.clear()
-        self.reset_user.clear()
+        # self.test1_user.clear()
+        # self.reset_user.clear()
         self.login_user.clear()
         self.test_business.clear()
         self.review_business.clear() 
