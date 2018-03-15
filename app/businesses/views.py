@@ -75,10 +75,12 @@ def fn_business(current_user, business_id):
             if one_business.get('name') == data['name']:
                 business_name_error = {"message": "Business name already" + 
                         " exists. Create another one"}
-        if web_address_error:
-            return jsonify(web_address_error)
+        if current_user['user_id'] != single_business['user_id']:
+            return jsonify({'message': 'One can only edit own business'})
         if business_name_error:
             return jsonify(business_name_error)
+        if web_address_error:
+            return jsonify(web_address_error)
         single_business['name'] = data['name']
         single_business['location'] = data['location']
         single_business['web_address'] = data['web_address']
@@ -87,13 +89,15 @@ def fn_business(current_user, business_id):
     
     # Delete a business
     if request.method == 'DELETE':
+        if current_user['user_id'] != single_business['user_id']:
+            return jsonify({'message': 'One can only delete own business'})
         business_i.businesses.pop(single_business['business_id'])
         return jsonify({"message" : "Business deleted successfully"}), 200
 
 @busy.route('/businesses/<int:business_id>/reviews', 
                 methods=['GET', 'POST'])
 @token_required
-def fn_reviews(current_user ,business_id):
+def fn_reviews(current_user, business_id):
     """Post or view reviews for a business"""
     single_business = {}
     

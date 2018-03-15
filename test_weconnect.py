@@ -131,11 +131,13 @@ class TestAuthentication(unittest.TestCase):
         """Test api cannot create duplicate business"""
         response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
-            headers={'content-type':'application/json'})
+            headers={'content-type':'application/json', 
+                'x-access-token':self.token})
         dup_response = self.client().post('/api/v1/businesses', 
             data=json.dumps(self.test_business), 
-            headers={'content-type':'application/json'})
-        self.assertIn("Business name already exists.", str(dup_response.data))
+            headers={'content-type':'application/json', 
+                'x-access-token':self.token})
+        self.assertIn("Web address already exists.", str(dup_response.data))
 
     def test_get_businesses(self):
         """Test api can get all businesses"""
@@ -185,12 +187,6 @@ class TestAuthentication(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         view_response = self.client().get('/api/v1/businesses/1/reviews')
         self.assertEqual(view_response.status_code, 200)
-        
-    def test_cannot_create_duplicate_web_address(self):
-        """
-        Test api cannot create business with duplicate business web address
-        """
-        pass
 
     def tearDown(self):
         self.business_i.businesses.clear()
