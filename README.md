@@ -1,6 +1,8 @@
 # WeConnect
-[![Build Status](https://travis-ci.org/daktari01/we_connect.svg?branch=development)](https://travis-ci.org/daktari01/we_connect)
-[![Coverage Status](https://coveralls.io/repos/github/daktari01/we_connect/badge.svg?branch=development)](https://coveralls.io/github/daktari01/we_connect?branch=development)
+[![Build Status](https://travis-ci.org/daktari01/we_connect.svg?branch=master)]
+(https://travis-ci.org/daktari01/we_connect)
+[![Coverage Status](https://coveralls.io/repos/github/daktari01/we_connect/badge.svg?branch=master)](https://coveralls.io/github/daktari01/we_connect?branch=master)
+
 ## Introduction
 WeConnect is an application where users and busibesses interract. A user is able to create a business profile, from which other users can give reviews about that business.
 
