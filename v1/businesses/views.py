@@ -3,8 +3,8 @@ from flask import Flask, request, jsonify
 
 # Local imports
 from . import busy
-from app.models import User, Business, Review
-from app.auth.views import token_required
+from v1.models import User, Business, Review
+from v1.auth.views import token_required
 
 # Create instances of 'model' classes
 user = User()
@@ -118,8 +118,9 @@ def fn_reviews(current_user, business_id):
 
     # Get all reviews for a business
     if request.method == 'GET':
+        review_id = len(reviews_i.reviews) + 1
         business_review = {}
         for biz_review in reviews_i.reviews.values():
             if biz_review['business_id'] == business_id:
-                business_review.update(biz_review)
+                business_review[review_id] = biz_review
         return jsonify(business_review) 

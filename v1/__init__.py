@@ -3,15 +3,14 @@
 from flask import Flask
 
 # Local imports
-
 from config import app_config
 from .auth.views import token_required
 from . import models
-from app.models import Business, Review
+from v1.models import Business, Review
 
 
 
-def create_app(config_name):
+def create_app_v1(config_name):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
 

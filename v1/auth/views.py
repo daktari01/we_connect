@@ -8,7 +8,7 @@ from functools import wraps
 
 # Local imports
 from . import auth
-from app.models import User
+from v1.models import User
 
 # Create instances of 'model' classes
 user = User()
