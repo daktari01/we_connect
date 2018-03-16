@@ -15,6 +15,13 @@ User login
     "password":"maluni123"
 }
 
+Reset_password
+{
+    "old_password": "maluni123",
+    "new_password": "maluni456",
+    "confirm_new_password": "maluni456"
+}
+
 Create business
 {
     "name":"Andela",
@@ -40,4 +47,7 @@ Business 3
 }
 
 Reviews
-{}
+{
+    "review_title": "I liked it",
+    "review_text": "Lorem ipsum dolor sit amet"
+}

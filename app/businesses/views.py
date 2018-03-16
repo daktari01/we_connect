@@ -104,8 +104,6 @@ def fn_reviews(current_user, business_id):
     for business in business_i.businesses.values():
         if business['business_id'] == business_id:
             single_business = business
-        if not single_business:
-            return jsonify({"message" : "Business not found"}), 404
     # Post a review for a business
     if request.method == 'POST':
         data = request.get_json()
@@ -122,7 +120,6 @@ def fn_reviews(current_user, business_id):
     if request.method == 'GET':
         business_review = {}
         for biz_review in reviews_i.reviews.values():
-            
             if biz_review['business_id'] == business_id:
                 business_review.update(biz_review)
         return jsonify(business_review) 

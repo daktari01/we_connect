@@ -100,8 +100,17 @@ def login():
 def reset_password(current_user):
     """Reset user password"""
     data = request.get_json()
+    old_password = data['old_password']
+    new_password = data['new_password']
+    confirm_new_password = data['confirm_new_password']
+    if old_password != confirm_new_password:
+        return jsonify({'message': 'Your old password must match the current' +
+            ' password before it can be reset.'})
+    if new_password != current_user['password']:
+        return jsonify({'message': 'Your new password must match the confirm' +
+            ' password before it can be reset.'})
     user.users[data["username"]]["password"] = generate_password_hash(
-                                            data['password'])
+                                            data['new_password'])
     return jsonify({"message" : "Password reset successful"})
 
 @auth.route('/logout', methods=['POST'])
