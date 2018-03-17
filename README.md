@@ -73,7 +73,7 @@ If you are using Windows, liase with your system admin to help you in the instal
 4. Create a pull request
 
 ## Licence
-The software is protected under [MIT License](https://opensource.org/licenses/MIT)
+The software is protected under [MIT License](https://github.com/daktari01/we_connect/blob/master/LICENSE)
 
 ## Contributors
 - [James Dindi](https://github.com/daktari01)
