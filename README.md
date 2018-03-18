@@ -5,7 +5,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8e8f3c10e7a340dc868539a377ac1c12)](https://www.codacy.com/app/daktari01/we_connect?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=daktari01/we_connect&amp;utm_campaign=Badge_Grade)
 
 ## Introduction
-WeConnect is an application where users and busibesses interract. A user is able to create a business profile, from which other users can give reviews about that business.
+WeConnect is an application where users and businesses interract. A user is able to create a business profile, from which other users can give reviews about that business.
 
 ## The Interface
 1. [Home Page](https://daktari01.github.io/we_connect/designs/UI/index.html)
