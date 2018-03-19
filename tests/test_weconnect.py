@@ -100,7 +100,6 @@ class TestAuthentication(unittest.TestCase):
             headers={'content-type':'application/json', 
                 'x-access-token':self.token})
         self.assertEqual(response.status_code, 200)
-        # self.assertIn("Password reset successful", str(response.data))
         
     def test_logout_user(self):
         """Test api can logout user"""
@@ -249,7 +248,6 @@ class TestAuthentication(unittest.TestCase):
     def tearDown(self):
         self.business_i.businesses.clear()
         self.test1_user.clear()
-        # self.reset_user.clear()
         self.login_user.clear()
         self.test_business.clear()
         self.review_business.clear() 
