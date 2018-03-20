@@ -11,7 +11,7 @@ app_v2 = create_app_v2(config_name)
 
 if __name__ == '__main__':
     # app_v1.run()
-    # app_v2.run()
+    app_v2.run()
     # # c9
     # app_v1.run(host='0.0.0.0', port=8080, debug=True) 
-    app_v2.run(host='0.0.0.0', port=8080, debug=True)
+    # app_v2.run(host='0.0.0.0', port=8080, debug=True)
