@@ -51,3 +51,15 @@ Reviews
     "review_title": "I liked it",
     "review_text": "Lorem ipsum dolor sit amet"
 }
+
+CHALLENGE 2
+
+User registration
+{
+    "username":"morris",
+    "first_name" : "Morris",
+    "last_name" : "Maluni",
+    "email":"maluni@weconnect.com",
+    "first_password":"maluni123",
+    "confirm_password":"maluni123"
+}

@@ -1,4 +1,5 @@
 # v2/__init__.py
+import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy 
@@ -15,5 +16,9 @@ def create_app_v2(config_name):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     migrate = Migrate(app, db)
     db.init_app(app)
+
+    # Register auth blueprint
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/api/v2/auth')
               
     return app
