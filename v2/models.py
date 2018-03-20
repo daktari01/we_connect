@@ -1,6 +1,6 @@
 # v2/models.py
 
-from v2 import db 
+from v2.create_app_v2 import db 
 
 class User(db.Model):
     """Class for the users model"""

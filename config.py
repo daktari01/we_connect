@@ -7,7 +7,7 @@ class Config(object):
 
     DEBUG = False
     TESTING = False
-    SQL_ALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
 
 class TestingConfig(Config):
     """Testing configuration"""
