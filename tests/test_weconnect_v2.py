@@ -14,6 +14,7 @@ class TestWeconnect(unittest.TestCase):
         self.test_user = {"username":"morris", "first_name" : "Morris",
             "last_name" : "Maluni", "email":"maluni@weconnect.com",
             "first_password":"maluni123", "confirm_password":"maluni123"}
+        self.test_login = {"username":"morris", "password":"maluni123"}
 
         with self.app.app_context():
             # Create all tables
@@ -26,6 +27,13 @@ class TestWeconnect(unittest.TestCase):
                     content_type='application/json')
         self.assertEqual(response.status_code, 201)
         self.assertIn('User registered successfully', str(response.data))
+
+    def test_user_can_login(self):
+        """Test that a registered user can log in"""
+        self.client().post('/api/v2/auth/login', 
+                    data=json.dumps(self.test_login), 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 201)
 
     def tearDown(self):
         """Destroy all initialized variables"""

@@ -1,6 +1,7 @@
 import os
 import jwt
 import datetime
+import psycopg2
 
 from flask import Flask, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,6 +11,24 @@ from functools import wraps
 from . import auth
 from v2.models import User, Business, Review
 from v2 import db
+
+def token_required(fn):
+    """Decorator to require authentication token"""
+    @wraps(fn)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return jsonify({'message' : 'Token is missing'}), 401
+        try:
+            data = jwt.decode(token, os.getenv('SECRET_KEY'))
+            current_user = User.query.filter_by(username=data[
+                                                'username']).first()
+        except:
+            return jsonify({'message' : 'Token is invalid!'}), 401
+        return fn(current_user, *args, **kwargs)
+    return decorated
 
 @auth.route('/register', methods=['POST'])
 def register():
@@ -23,9 +42,13 @@ def register():
         username=data['username'], email=data['email'], 
         first_password=first_password, confirm_password=confirm_password)
     # Save to database
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User registered successfully'})
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User registered successfully'})
+    except (Exception, psycopg2.DatabaseError) as error:
+        return jsonify(str(error))
+    
 
 @auth.route('/users', methods=['GET'])
 def get_users():
@@ -41,3 +64,27 @@ def get_users():
         user_data['email'] = user.email
         output.append(user_data)
     return jsonify({'users' : output})
+
+@auth.route('/login', methods=['POST'])
+def login():
+    """Method to log in authenticated user"""
+    data = request.get_json()
+    # Check if required login information is missing
+    if not data['username'] or not data['password']:
+        return make_response("WeConnect was unable to authenticate", 401, 
+                {'WWW-Authenticate' : 'Basic realm="Login required'})
+    user = User.query.filter_by(username=data['username']).first()
+
+    # Check if user is not in system
+    if not user:
+        return make_response("WeConnect was unable to authenticate", 401, 
+                {'WWW-Authenticate' : 'Basic realm="User not found. Register.'})
+    # Check if password given matches password in WeConnect
+    if check_password_hash(user.first_password, data['password']):
+        token = jwt.encode({'username' : user.username, 
+            'exp' : datetime.datetime.utcnow() + datetime.timedelta(
+                minutes=30)}, os.getenv('SECRET_KEY'))
+        return jsonify({'token' : token.decode('UTF-8')}), 200
+    # Check if authentication fails
+    return make_response("WeConnect was unable to authenticate", 401, 
+                {'WWW-Authenticate' : 'Basic realm="Login required'})
