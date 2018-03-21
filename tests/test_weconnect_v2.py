@@ -18,6 +18,9 @@ class TestWeconnect(unittest.TestCase):
         self.reset_password = {"old_password": "maluni123",
                                 "new_password": "maluni456",
                                 "confirm_new_password": "maluni456"}
+        self.test_business = {"name":"Andela", "location":"Nairobi, Kenya",
+                                "category": "Software development",
+                                "web_address":"www.andela.com"}
 
         with self.app.app_context():
             # Create all tables
@@ -42,6 +45,24 @@ class TestWeconnect(unittest.TestCase):
         """Test that a logged in user can reset own password"""
         response = self.client().post('/api/v2/auth/register', 
                     data=json.dumps(self.reset_password), 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        
+    def test_user_can_logout(self):
+        """Test that user can log out"""
+        pass
+    
+    def test_user_can_register_business(self):
+        """Test that user can register a business"""
+        response = self.client().post('/api/v2/auth/businesses', 
+                    data=json.dumps(self.test_business), 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('Business registered successfully', str(response.data))
+    
+    def test_user_can_get_all_businesses(self):
+        """Test that user can get all businesses"""
+        response = self.client().get('/api/v2/auth/businesses', 
                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
 

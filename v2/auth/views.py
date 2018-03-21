@@ -9,7 +9,7 @@ from functools import wraps
 
 # Local imports
 from . import auth
-from v2.models import User, Business, Review
+from v2.models import User
 from v2 import db
 
 def token_required(fn):
@@ -110,3 +110,8 @@ def reset_password(current_user):
     else:
         return jsonify({'message': 'Your old password must match the current' +
             ' password before it can be reset.'})
+            
+@auth.route('/logout')
+@token_required
+def logout(current_user):
+    pass

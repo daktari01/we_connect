@@ -20,5 +20,9 @@ def create_app_v2(config_name):
     # Register auth blueprint
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/api/v2/auth')
-              
+    
+    # Register busn blueprint
+    from .businesses import busn as busn_blueprint
+    busn.register_blueprint(busn_blueprint, url_prefix='/api/v2/businesses')
+    
     return app
