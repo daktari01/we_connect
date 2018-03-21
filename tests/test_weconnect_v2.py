@@ -21,6 +21,8 @@ class TestWeconnect(unittest.TestCase):
         self.test_business = {"name":"Andela", "location":"Nairobi, Kenya",
                                 "category": "Software development",
                                 "web_address":"www.andela.com"}
+        self.test_review = {"review_title": "I liked it",
+                            "review_text": "Lorem ipsum dolor sit amet"}
 
         with self.app.app_context():
             # Create all tables
@@ -88,6 +90,20 @@ class TestWeconnect(unittest.TestCase):
                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIn('Business deleted successfully', str(reponse.data))
+
+    def test_user_can_post_review(self):
+        """Test that a user can post a review for a business"""
+        response = self.client().post('/api/v2/business/1/reviews', 
+                    data=json.dumps(self.test_review), 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('Review posted successfully', str(response.data))
+
+    def test_user_can_get_all_reviews(self):
+        """Test that a user can get all reviews for a business"""
+        response = self.client().get('/api/v2/business/1/reviews', 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """Destroy all initialized variables"""

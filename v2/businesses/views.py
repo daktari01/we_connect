@@ -29,10 +29,10 @@ def retrieve_businesses():
     """Get all businesses from the database"""
     businesses = Business.query.all()
     output = []
-    # Get user data into a list of dictionaries
+    # Get business data into a list of dictionaries
     for business in businesses:
         business_data = {}
-        business_data['user_id'] = business_data.user_id
+        business_data['user_id'] = business.user_id
         business_data['name'] = business.name
         business_data['location'] = business.location
         business_data['category'] = business.category
@@ -76,7 +76,8 @@ def edit_one_business(current_user, business_id):
         return jsonify(str(error))
 
 @busn.route('/businesses/<business_id>', methods=['DELETE'])
-@token_rdelete_one_business(current_user, business_id):
+@token_required
+def delete_one_business(current_user, business_id):
     """Delete business details"""
     business = Business.query.filter_by(id=business_id).first()
     data = request.get_json()
@@ -87,3 +88,40 @@ def edit_one_business(current_user, business_id):
     db.session.delete(business)
     db.session.commit()
     return jsonify({'message' : 'Business deleted successfully!'})
+
+@busn.route('/businesses/<business_id>/reviews', methods=['POST'])
+@token_required
+def post_review_for_business(current_user, business_id):
+    """Post review for a business"""
+    business = Business.query.filter_by(id=business_id).first()
+    data = request.get_json()
+    if not business:
+        return jsonify({'message':'Business not found'})
+    new_review = Review(rev_user_id=current_user['id'], business_id=business_id,
+                        review_title=data['review_title'], 
+                        review_text=data['review_text'])
+    # Save to the database
+    try:
+        db.session.add(new_review)
+        db.session.commit()
+        return jsonify({'message': 'Review posted successfully'})
+    except (Exception, psycopg2.DatabaseError) as error:
+        return jsonify(str(error))
+
+@busn.route('/businesses/<business_id>/reviews', methods=['GET'])
+def post_review_for_business(current_user, business_id):
+    """Get all reviews for a business"""
+    business = Business.query.filter_by(id=business_id).first()
+    data = request.get_json()
+    if not business:
+        return jsonify({'message':'Business not found'})
+    reviews = Review.query.all()
+    output = []
+    # Get review data into a list of dictionaries
+    for review in reviews:
+        review_data = {}
+        review_data['review_title'] = review.review_title
+        review_data['review_text'] = review.review_text
+        review_data['date_reviewed'] = review.date_reviewed
+        output.append(review_data)
+    return jsonify({'reviews' : output})
