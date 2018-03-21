@@ -15,6 +15,9 @@ class TestWeconnect(unittest.TestCase):
             "last_name" : "Maluni", "email":"maluni@weconnect.com",
             "first_password":"maluni123", "confirm_password":"maluni123"}
         self.test_login = {"username":"morris", "password":"maluni123"}
+        self.reset_password = {"old_password": "maluni123",
+                                "new_password": "maluni456",
+                                "confirm_new_password": "maluni456"}
 
         with self.app.app_context():
             # Create all tables
@@ -34,6 +37,13 @@ class TestWeconnect(unittest.TestCase):
                     data=json.dumps(self.test_login), 
                     content_type='application/json')
         self.assertEqual(response.status_code, 201)
+        
+    def test_user_can_reset_password(self):
+        """Test that a logged in user can reset own password"""
+        response = self.client().post('/api/v2/auth/register', 
+                    data=json.dumps(self.reset_password), 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """Destroy all initialized variables"""

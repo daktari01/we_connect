@@ -88,3 +88,25 @@ def login():
     # Check if authentication fails
     return make_response("WeConnect was unable to authenticate", 401, 
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
+                
+@auth.route('/reset-password', methods=['POST'])
+@token_required
+def reset_password(current_user):
+    """Reset user password"""
+    data = request.get_json()
+    user = User.query.filter_by(username=current_user['username']).first()
+    old_password = data['old_password']
+    new_password = data['new_password']
+    confirm_new_password = data['confirm_new_password']
+    
+    if new_password != confirm_new_password:
+        return jsonify({'message': 'Your new password must match the confirm' +
+            ' password before it can be reset.'})
+    if check_password_hash(current_user['password'], old_password):
+        user.users[current_user["username"]][
+                "password"] = generate_password_hash(data[
+                                'new_password'])
+        return jsonify({"message" : "Password reset successful"})
+    else:
+        return jsonify({'message': 'Your old password must match the current' +
+            ' password before it can be reset.'})
