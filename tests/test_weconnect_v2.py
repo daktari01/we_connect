@@ -72,6 +72,16 @@ class TestWeconnect(unittest.TestCase):
                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
+    def test_user_can_edit_business(self):
+        """Test that a user can edit a business"""
+        self.client().put('/api/v2/auth/businesses/1', 
+                    content_type='application/json')
+        self.test_business = {"name":"Google", "location":"San Francisco, CA",
+                                "category": "Web services",
+                                "web_address":"www.google.com"}
+        self.assertEqual(self.test_business["name"], "Google")
+        self.assertEqual(self.test_business["web_address"], "www.google.com")
+        
     def tearDown(self):
         """Destroy all initialized variables"""
         with self.app.app_context():

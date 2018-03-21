@@ -41,7 +41,7 @@ def retrieve_businesses():
     return jsonify({'businesses' : output})
 
 @busn.route('/businesses/<business_id>', methods=['GET'])
-def retrieve_one_businesses(business_id):
+def retrieve_one_business(business_id):
     """Retrieve a single business by id"""
     business = Business.query.filter_by(id=business_id).first()
     if not business:
@@ -53,3 +53,24 @@ def retrieve_one_businesses(business_id):
     business_data['category'] = business.category
     business_data['web_address'] = business.web_address
     return jsonify(business_data)
+
+@busn.route('/businesses/<business_id>', methods=['PUT'])
+@token_required
+def edit_one_business(current_user, business_id):
+    """Edit business details"""
+    business = Business.query.filter_by(id=business_id).first()
+    data = request.get_json()
+    if not business:
+        return jsonify({'message':'Business not found'})
+    if business.user_id != current_user['id']:
+        return jsonify({'message': 'User can only edit own businesses'})
+    business.name = data['name']
+    business.location = data['location']
+    business.category = data['category']
+    business.web_address = data['web_address']
+    # Save to the database
+    try:
+        db.session.commit()
+        return jsonify({'message': 'Business edited successfully'})
+    except (Exception, psycopg2.DatabaseError) as error:
+        return jsonify(str(error))
