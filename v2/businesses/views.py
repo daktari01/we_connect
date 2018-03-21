@@ -74,3 +74,16 @@ def edit_one_business(current_user, business_id):
         return jsonify({'message': 'Business edited successfully'})
     except (Exception, psycopg2.DatabaseError) as error:
         return jsonify(str(error))
+
+@busn.route('/businesses/<business_id>', methods=['DELETE'])
+@token_rdelete_one_business(current_user, business_id):
+    """Delete business details"""
+    business = Business.query.filter_by(id=business_id).first()
+    data = request.get_json()
+    if not business:
+        return jsonify({'message':'Business not found'})
+    if business.user_id != current_user['id']:
+        return jsonify({'message': 'User can only edit own businesses'})
+    db.session.delete(business)
+    db.session.commit()
+    return jsonify({'message' : 'Business deleted successfully!'})

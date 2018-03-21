@@ -81,7 +81,14 @@ class TestWeconnect(unittest.TestCase):
                                 "web_address":"www.google.com"}
         self.assertEqual(self.test_business["name"], "Google")
         self.assertEqual(self.test_business["web_address"], "www.google.com")
-        
+
+    def test_user_can_delete_business(self):
+        """Test that a user can delete own business"""
+        response = self.client().delete('/api/v2/auth/businesses/1', 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Business deleted successfully', str(reponse.data))
+
     def tearDown(self):
         """Destroy all initialized variables"""
         with self.app.app_context():
