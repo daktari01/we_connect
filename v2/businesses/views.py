@@ -39,3 +39,17 @@ def retrieve_businesses():
         business_data['web_address'] = business.web_address
         output.append(business_data)
     return jsonify({'businesses' : output})
+
+@busn.route('/businesses/<business_id>', methods=['GET'])
+def retrieve_one_businesses(business_id):
+    """Retrieve a single business by id"""
+    business = Business.query.filter_by(id=business_id).first()
+    if not business:
+        return jsonify({'message':'Business not found'})
+    business_data = {}
+    business_data['user_id'] = business_data.user_id
+    business_data['name'] = business.name
+    business_data['location'] = business.location
+    business_data['category'] = business.category
+    business_data['web_address'] = business.web_address
+    return jsonify(business_data)

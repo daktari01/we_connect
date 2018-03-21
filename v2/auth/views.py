@@ -74,7 +74,6 @@ def login():
         return make_response("WeConnect was unable to authenticate", 401, 
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
     user = User.query.filter_by(username=data['username']).first()
-
     # Check if user is not in system
     if not user:
         return make_response("WeConnect was unable to authenticate", 401, 
@@ -95,6 +94,8 @@ def reset_password(current_user):
     """Reset user password"""
     data = request.get_json()
     user = User.query.filter_by(username=current_user['username']).first()
+    if not user:
+        return jsonify({'message':'User not found.'})
     old_password = data['old_password']
     new_password = data['new_password']
     confirm_new_password = data['confirm_new_password']

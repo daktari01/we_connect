@@ -66,6 +66,12 @@ class TestWeconnect(unittest.TestCase):
                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
+    def test_user_can_get_one_business(self):
+        """Test that a user can get one business by id"""
+        response = self.client().get('/api/v2/auth/businesses/1', 
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
     def tearDown(self):
         """Destroy all initialized variables"""
         with self.app.app_context():
