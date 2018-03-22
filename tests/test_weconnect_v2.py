@@ -36,6 +36,10 @@ class TestWeconnect(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn('User registered successfully', str(response.data))
 
+    def test_duplicate_registration(self):
+        """Test that a user cannot register twice"""
+        pass
+
     def test_user_can_login(self):
         """Test that a registered user can log in"""
         self.client().post('/api/v2/auth/login', 
@@ -61,6 +65,10 @@ class TestWeconnect(unittest.TestCase):
                     content_type='application/json')
         self.assertEqual(response.status_code, 201)
         self.assertIn('Business registered successfully', str(response.data))
+
+    def test_user_cannot_register_duplicate_business(self):
+        """Test that a user cannot register a duplicate business"""
+        pass
     
     def test_user_can_get_all_businesses(self):
         """Test that user can get all businesses"""
