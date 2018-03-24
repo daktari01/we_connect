@@ -47,7 +47,7 @@ def retrieve_one_business(business_id):
     if not business:
         return jsonify({'message':'Business not found'})
     business_data = {}
-    business_data['user_id'] = business_data.user_id
+    business_data['user_id'] = business.user_id
     business_data['name'] = business.name
     business_data['location'] = business.location
     business_data['category'] = business.category
@@ -109,19 +109,37 @@ def post_review_for_business(current_user, business_id):
         return jsonify(str(error))
 
 @busn.route('/businesses/<business_id>/reviews', methods=['GET'])
-def get_review_for_business(current_user, business_id):
+def get_review_for_business(business_id):
+    """Get all reviews for a business"""
+    # data = request.get_json()
+    # business = Business.query.filter_by(id=business_id).first()
+    # if not business:
+    #     return jsonify({'message':'Business not found'})
+    # # reviews = business.reviews
+    # return jsonify({'reviews' : 'dummy review'})
+    # output = []
+    # Get review data into a list of dictionaries
+    # for review in reviews:
+    #     review_data = {}
+    #     review_data['review_title'] = review.review_title
+    #     review_data['review_text'] = review.review_text
+    #     review_data['date_reviewed'] = review.date_reviewed
+    #     output.append(review_data)
+    # return jsonify({'reviews' : output})
+    # output = [
+    #             {
+    #                 'review_title': review.review_title,
+    #                 'review_text': review.review_text,
+    #                 'date_reviewed': review.date_reviewed
+    #             } for review in reviews
+    #         ]
+    # return jsonify({'reviews' : 'dummy review'})
+
+@busn.route('/businesses/<business_id>/reviews', methods=['GET'])
+def retrieve_reviews():
     """Get all reviews for a business"""
     business = Business.query.filter_by(id=business_id).first()
     data = request.get_json()
     if not business:
         return jsonify({'message':'Business not found'})
-    reviews = Review.query.all()
-    output = []
-    # Get review data into a list of dictionaries
-    for review in reviews:
-        review_data = {}
-        review_data['review_title'] = review.review_title
-        review_data['review_text'] = review.review_text
-        review_data['date_reviewed'] = review.date_reviewed
-        output.append(review_data)
-    return jsonify({'reviews' : output})
+    return jsonify({'reviews' : 'dummy review'})

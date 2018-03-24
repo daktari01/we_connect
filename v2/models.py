@@ -36,5 +36,5 @@ class Review(db.Model):
     rev_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'))
     review_title = db.Column(db.String(150))
-    review_text = db.Column(db.Text)
+    review_text = db.Column(db.String(250))
     date_reviewed = db.Column(db.DateTime, default=db.func.current_timestamp())
