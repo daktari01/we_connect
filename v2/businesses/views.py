@@ -13,7 +13,7 @@ from v2 import db
 def create_business(current_user):
     """Register a business"""
     data = request.get_json()
-    new_business = Business(user_id=current_user['id'], name=data['name'], 
+    new_business = Business(user_id=current_user.id, name=data['name'], 
                     location=data['location'], category = data['category'],
                     web_address = data['web_address'])
     # Save to the database
@@ -62,7 +62,7 @@ def edit_one_business(current_user, business_id):
     data = request.get_json()
     if not business:
         return jsonify({'message':'Business not found'})
-    if business.user_id != current_user['id']:
+    if business.user_id != current_user.id:
         return jsonify({'message': 'User can only edit own businesses'})
     business.name = data['name']
     business.location = data['location']
@@ -83,7 +83,7 @@ def delete_one_business(current_user, business_id):
     data = request.get_json()
     if not business:
         return jsonify({'message':'Business not found'})
-    if business.user_id != current_user['id']:
+    if business.user_id != current_user.id:
         return jsonify({'message': 'User can only edit own businesses'})
     db.session.delete(business)
     db.session.commit()
@@ -97,7 +97,7 @@ def post_review_for_business(current_user, business_id):
     data = request.get_json()
     if not business:
         return jsonify({'message':'Business not found'})
-    new_review = Review(rev_user_id=current_user['id'], business_id=business_id,
+    new_review = Review(rev_user_id=current_user.id, business_id=business_id,
                         review_title=data['review_title'], 
                         review_text=data['review_text'])
     # Save to the database
@@ -109,7 +109,7 @@ def post_review_for_business(current_user, business_id):
         return jsonify(str(error))
 
 @busn.route('/businesses/<business_id>/reviews', methods=['GET'])
-def post_review_for_business(current_user, business_id):
+def get_review_for_business(current_user, business_id):
     """Get all reviews for a business"""
     business = Business.query.filter_by(id=business_id).first()
     data = request.get_json()

@@ -23,6 +23,6 @@ def create_app_v2(config_name):
     
     # Register busn blueprint
     from .businesses import busn as busn_blueprint
-    busn.register_blueprint(busn_blueprint, url_prefix='/api/v2/businesses')
+    app.register_blueprint(busn_blueprint, url_prefix='/api/v2')
     
     return app

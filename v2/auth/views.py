@@ -93,7 +93,7 @@ def login():
 def reset_password(current_user):
     """Reset user password"""
     data = request.get_json()
-    user = User.query.filter_by(username=current_user['username']).first()
+    user = User.query.filter_by(username=current_user.username).first()
     if not user:
         return jsonify({'message':'User not found.'})
     old_password = data['old_password']
@@ -103,10 +103,11 @@ def reset_password(current_user):
     if new_password != confirm_new_password:
         return jsonify({'message': 'Your new password must match the confirm' +
             ' password before it can be reset.'})
-    if check_password_hash(current_user['password'], old_password):
-        user.users[current_user["username"]][
-                "password"] = generate_password_hash(data[
+    if check_password_hash(current_user.password, old_password):
+        user.first_password = generate_password_hash(data[
                                 'new_password'])
+        user.confirm_password = generate_password_hash(data[
+                                'confirm_new_password'])
         return jsonify({"message" : "Password reset successful"})
     else:
         return jsonify({'message': 'Your old password must match the current' +
