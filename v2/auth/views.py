@@ -51,7 +51,8 @@ def register():
     
 
 @auth.route('/users', methods=['GET'])
-def get_users():
+@token_required
+def get_users(current_user):
     """Retrieve all users from the database"""
     users = User.query.all()
     output = []
@@ -103,7 +104,7 @@ def reset_password(current_user):
     if new_password != confirm_new_password:
         return jsonify({'message': 'Your new password must match the confirm' +
             ' password before it can be reset.'})
-    if check_password_hash(current_user.password, old_password):
+    if check_password_hash(current_user.first_password, old_password):
         user.first_password = generate_password_hash(data[
                                 'new_password'])
         user.confirm_password = generate_password_hash(data[
@@ -113,7 +114,7 @@ def reset_password(current_user):
         return jsonify({'message': 'Your old password must match the current' +
             ' password before it can be reset.'})
             
-@auth.route('/logout')
+@auth.route('/logout', methods=['POST'])
 @token_required
 def logout(current_user):
-    pass
+    return jsonify({'message':'Log out successful'})

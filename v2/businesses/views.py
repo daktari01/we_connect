@@ -80,11 +80,10 @@ def edit_one_business(current_user, business_id):
 def delete_one_business(current_user, business_id):
     """Delete business details"""
     business = Business.query.filter_by(id=business_id).first()
-    data = request.get_json()
     if not business:
         return jsonify({'message':'Business not found'})
     if business.user_id != current_user.id:
-        return jsonify({'message': 'User can only edit own businesses'})
+        return jsonify({'message': 'User can only delete own businesses'})
     db.session.delete(business)
     db.session.commit()
     return jsonify({'message' : 'Business deleted successfully!'})
@@ -109,37 +108,19 @@ def post_review_for_business(current_user, business_id):
         return jsonify(str(error))
 
 @busn.route('/businesses/<business_id>/reviews', methods=['GET'])
-def get_review_for_business(business_id):
-    """Get all reviews for a business"""
-    # data = request.get_json()
-    # business = Business.query.filter_by(id=business_id).first()
-    # if not business:
-    #     return jsonify({'message':'Business not found'})
-    # # reviews = business.reviews
-    # return jsonify({'reviews' : 'dummy review'})
-    # output = []
-    # Get review data into a list of dictionaries
-    # for review in reviews:
-    #     review_data = {}
-    #     review_data['review_title'] = review.review_title
-    #     review_data['review_text'] = review.review_text
-    #     review_data['date_reviewed'] = review.date_reviewed
-    #     output.append(review_data)
-    # return jsonify({'reviews' : output})
-    # output = [
-    #             {
-    #                 'review_title': review.review_title,
-    #                 'review_text': review.review_text,
-    #                 'date_reviewed': review.date_reviewed
-    #             } for review in reviews
-    #         ]
-    # return jsonify({'reviews' : 'dummy review'})
-
-@busn.route('/businesses/<business_id>/reviews', methods=['GET'])
-def retrieve_reviews():
+def get_reviews_for_business(business_id):
     """Get all reviews for a business"""
     business = Business.query.filter_by(id=business_id).first()
-    data = request.get_json()
     if not business:
         return jsonify({'message':'Business not found'})
-    return jsonify({'reviews' : 'dummy review'})
+    reviews = business.reviews
+    output = []
+    # Get review data into a list of dictionaries
+    for review in reviews:
+        review_data = {}
+        review_data['review_title'] = review.review_title
+        review_data['review_text'] = review.review_text
+        review_data['date_reviewed'] = review.date_reviewed
+        output.append(review_data)
+    return jsonify({'reviews' : output})
+    
