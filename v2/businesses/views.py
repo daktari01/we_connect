@@ -13,6 +13,21 @@ from v2 import db
 def create_business(current_user):
     """Register a business"""
     data = request.get_json()
+    web_address_error = {}
+    busn_name_error = {}
+    businesses = Business.query.all()
+    # Get rid of duplicates
+    for business in businesses:
+        if data['name'] == business.name:
+            busn_name_error = {'message':'A business with that name already'+
+                                            ' exists. Try another name'}
+        if data['web_address'] == business.web_address:
+            web_address_error = {'message':'A business with that web address'+
+                                        ' already exists. Try another one'}
+    if busn_name_error:
+        return jsonify(busn_name_error)
+    if web_address_error:
+        return jsonify(web_address_error)
     new_business = Business(user_id=current_user.id, name=data['name'], 
                     location=data['location'], category = data['category'],
                     web_address = data['web_address'])

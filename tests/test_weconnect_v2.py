@@ -17,6 +17,9 @@ class TestWeconnect(unittest.TestCase):
         self.test_user = {"username":"morris", "first_name" : "Morris",
             "last_name" : "Maluni", "email":"maluni@weconnect.com",
             "first_password":"maluni123", "confirm_password":"maluni123"}
+        self.test_user2 = {"username":"persontest", "first_name" : "Person",
+            "last_name" : "Test", "email":"person@weconnect.com",
+            "first_password":"Person123", "confirm_password":"Person123"}
         self.login_user = {"username":"login", "first_name" : "Login",
             "last_name" : "User", "email":"login.user@weconnect.com",
             "first_password":"login123", "confirm_password":"login123"}
@@ -28,6 +31,12 @@ class TestWeconnect(unittest.TestCase):
         self.test_business = {"name":"Andela", "location":"Nairobi, Kenya",
                                 "category": "Software development",
                                 "web_address":"www.andela.com"}
+        self.test_business2 = {"name":"Google", "location":"San Francisco, CA",
+                                "category": "Web development",
+                                "web_address":"www.google.com"}
+        self.test_business3 = {"name":"Cocacola", "location":"Atlanta, GA",
+                                "category": "Food and beverages",
+                                "web_address":"www.cocacola.com"}
         self.test_review = {"review_title": "I liked it",
                             "review_text": "Lorem ipsum dolor sit amet"}
         # Set up the token
@@ -40,6 +49,23 @@ class TestWeconnect(unittest.TestCase):
         data = json.loads(to_response.data.decode())
         self.token = data['token']
 
+        # Register user 2
+        self.client().post('/api/v2/auth/register', 
+            data=json.dumps(self.test_user), 
+            content_type='application/json')
+
+        # Register business 1
+        self.client().post('/api/v2/businesses', 
+                    data=json.dumps(self.test_business), 
+                    headers={'content-type':'application/json', 
+                                'x-access-token': self.token})
+
+        # Register business 2
+        self.client().post('/api/v2/businesses', 
+                    data=json.dumps(self.test_business2), 
+                    headers={'content-type':'application/json', 
+                                'x-access-token': self.token})
+
         with self.app.app_context():
             # Create all tables
             db.create_all()
@@ -49,36 +75,20 @@ class TestWeconnect(unittest.TestCase):
     def test_user_can_register(self):
         """Test user can be registered into the system"""
         response = self.client().post('/api/v2/auth/register', 
-                    data=json.dumps(self.test_user), 
+                    data=json.dumps(self.test_user2), 
                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertIn('User registered successfully', str(response.data))
 
     def test_duplicate_registration(self):
         """Test that a user cannot register twice"""
-        self.client().post('/api/v2/auth/register', 
-                    data=json.dumps(self.test_user), 
-                    content_type='application/json')
         response = self.client().post('/api/v2/auth/register', 
                     data=json.dumps(self.test_user), 
                     content_type='application/json')
-        print(">>>>>>>>>>>")
-        print(response.data)
-        print(">>>>>>>>>>>")
-        self.assertRaises(IntegrityError, response)
-        
-        # self.assertIn('duplicate key value violates unique constraint', 
-        #             str(response.data))
-        # with self.assertRaises(psycopg2.IntegrityError):
-        #     self.client().post('/api/v2/auth/register',
-        #         data=json.dumps(self.test_user), 
-        #         content_type='application/json')
+        self.assertIn('Username already exists.', str(response.data))
 
     def test_user_can_login(self):
         """Test that a registered user can log in"""
-        self.client().post('/api/v2/auth/register', 
-                    data=json.dumps(self.test_user), 
-                    content_type='application/json')
         response = self.client().post('/api/v2/auth/login', 
                     data=json.dumps(self.test_login), 
                     content_type='application/json')
@@ -110,7 +120,7 @@ class TestWeconnect(unittest.TestCase):
     def test_user_can_register_business(self):
         """Test that user can register a business"""
         response = self.client().post('/api/v2/businesses', 
-                    data=json.dumps(self.test_business), 
+                    data=json.dumps(self.test_business3), 
                     headers={'content-type':'application/json', 
                                 'x-access-token': self.token})
         self.assertEqual(response.status_code, 200)
@@ -118,15 +128,11 @@ class TestWeconnect(unittest.TestCase):
 
     def test_user_cannot_register_duplicate_business(self):
         """Test that a user cannot register a duplicate business"""
-        self.client().post('/api/v2/businesses', 
-                    data=json.dumps(self.test_business), 
-                    headers={'content-type':'application/json', 
-                                'x-access-token': self.token})
         response = self.client().post('/api/v2/businesses', 
                     data=json.dumps(self.test_business), 
                     headers={'content-type':'application/json', 
                                 'x-access-token': self.token})
-        self.assertIn('duplicate key value violates unique constraint', 
+        self.assertIn('A business with that name already exists', 
                         str(response.data))
     
     def test_user_can_get_all_businesses(self):
@@ -137,34 +143,22 @@ class TestWeconnect(unittest.TestCase):
 
     def test_user_can_get_one_business(self):
         """Test that a user can get one business by id"""
-        self.client().post('/api/v2/businesses', 
-                    data=json.dumps(self.test_business), 
-                    headers={'content-type':'application/json', 
-                                'x-access-token': self.token})
         response = self.client().get('/api/v2/businesses/1', 
                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_user_can_edit_business(self):
         """Test that a user can edit a business"""
-        self.client().post('/api/v2/businesses', 
-                    data=json.dumps(self.test_business), 
-                    headers={'content-type':'application/json', 
-                                'x-access-token': self.token})
-        self.client().put('/api/v2/businesses/1', 
+        self.client().put('/api/v2/businesses/2', 
                     content_type='application/json')
-        self.test_business = {"name":"Google", "location":"San Francisco, CA",
-                                "category": "Web services",
-                                "web_address":"www.google.com"}
-        self.assertEqual(self.test_business["name"], "Google")
-        self.assertEqual(self.test_business["web_address"], "www.google.com")
+        self.test_business = {"name":"Facebook", "location":"New York, NY",
+                                "category": "Social media",
+                                "web_address":"www.facebook.com"}
+        self.assertEqual(self.test_business["name"], "Facebook")
+        self.assertEqual(self.test_business["web_address"], "www.facebook.com")
 
     def test_user_can_delete_business(self):
         """Test that a user can delete own business"""
-        self.client().post('/api/v2/businesses', 
-                    data=json.dumps(self.test_business), 
-                    headers={'content-type':'application/json', 
-                                'x-access-token': self.token})
         business_id = db.session.query(Business).first().id
         response = self.client().delete('/api/v2/businesses/{}'
                                             .format(business_id), 
@@ -173,12 +167,14 @@ class TestWeconnect(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Business deleted successfully', str(response.data))
 
+    def test_user_cannot_get_non_existent_business(self):
+        """Test that a user cannot get a business that does not exist"""
+        response = self.client().get('/api/v2/businesses/470', 
+                    content_type='application/json')
+        self.assertIn('Business not found', str(response.data))
+
     def test_user_can_post_review(self):
         """Test that a user can post a review for a business"""
-        self.client().post('/api/v2/businesses', 
-                    data=json.dumps(self.test_business), 
-                    headers={'content-type':'application/json', 
-                                'x-access-token': self.token})
         business_id = db.session.query(Business).first().id
         response = self.client().post('/api/v2/businesses/{}/reviews'
                                 .format(business_id), 
@@ -190,16 +186,7 @@ class TestWeconnect(unittest.TestCase):
 
     def test_user_can_get_all_reviews(self):
         """Test that a user can get all reviews for a business"""
-        self.client().post('/api/v2/businesses', 
-                    data=json.dumps(self.test_business), 
-                    headers={'content-type':'application/json', 
-                                'x-access-token': self.token})
         business_id = db.session.query(Business).first().id
-        self.client().post('/api/v2/businesses/{}/reviews'
-                                .format(business_id), 
-                    data=json.dumps(self.test_review), 
-                    headers={'content-type':'application/json', 
-                                'x-access-token': self.token})
         response = self.client().get('/api/v2/businesses/{}/reviews'
                     .format(business_id), content_type='application/json')
         self.assertEqual(response.status_code, 200)

@@ -34,10 +34,25 @@ def token_required(fn):
 def register():
     """Register new user to the system"""
     data = request.get_json()
+    users = User.query.all()
+    email_error = {}
+    username_error = {}
     first_password = generate_password_hash(data['first_password'])
     if not check_password_hash(first_password, data['confirm_password']):
         return({'message': 'Your passwords do not match! Try again'})
     confirm_password = generate_password_hash(data['confirm_password'])
+    # Get rid of duplicate username and email
+    for user in users:
+        if data['username'] == user.username:
+            username_error = {'message': 'Username already exists.'+
+                                        ' Try another one.'}
+        if data['email'] == user.email:
+            email_error = {'message': 'Email already exists.'+
+                                        ' Try another one.'}
+    if username_error:
+        return jsonify(username_error)
+    if email_error:
+        return jsonify(email_error)
     new_user = User(first_name=data['first_name'], last_name=data['last_name'],
         username=data['username'], email=data['email'], 
         first_password=first_password, confirm_password=confirm_password)
