@@ -42,7 +42,9 @@ def create_business(current_user):
 @busn.route('/businesses', methods=['GET'])
 def retrieve_businesses():
     """Get all businesses from the database"""
-    businesses = Business.query.all()
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=9, type=int)
+    businesses = Business.query.paginate(page, limit, error_out=False).items
     output = []
     # Get business data into a list of dictionaries
     for business in businesses:
@@ -125,10 +127,12 @@ def post_review_for_business(current_user, business_id):
 @busn.route('/businesses/<business_id>/reviews', methods=['GET'])
 def get_reviews_for_business(business_id):
     """Get all reviews for a business"""
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=5, type=int)
     business = Business.query.filter_by(id=business_id).first()
     if not business:
         return jsonify({'message':'Business not found'})
-    reviews = business.reviews
+    reviews = business.reviews.paginate(page, limit, error_out=False).items
     output = []
     # Get review data into a list of dictionaries
     for review in reviews:

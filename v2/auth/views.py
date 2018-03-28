@@ -69,7 +69,9 @@ def register():
 @token_required
 def get_users(current_user):
     """Retrieve all users from the database"""
-    users = User.query.all()
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=10, type=int)
+    users = User.query.paginate(page, limit, error_out=False)
     output = []
     # Get user data into a list of dictionaries
     for user in users:
