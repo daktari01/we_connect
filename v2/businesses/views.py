@@ -48,14 +48,14 @@ def retrieve_businesses():
     search_category = request.args.get('category', default=None, type=str)
     search_location = request.args.get('location', default=None, type=str)
     if search_query:
-        businesses = Business.query.filter(Business.name.ilike(
-                search_query)).paginate(page, limit, error_out=False).items
+        businesses = Business.query.filter(Business.name.ilike('%'+
+            search_query+'%')).paginate(page, limit, error_out=False).items
     elif search_category:
-        businesses = Business.query.filter(Business.category.ilike(
-                search_category)).paginate(page, limit, error_out=False).items
+        businesses = Business.query.filter(Business.category.ilike('%'+
+            search_category+'%')).paginate(page, limit, error_out=False).items
     elif search_location:
-        businesses = Business.query.filter(Business.location.ilike(
-                search_location)).paginate(page, limit, error_out=False).items
+        businesses = Business.query.filter(Business.location.ilike('%'+
+            search_location+'%')).paginate(page, limit, error_out=False).items
     else:
         businesses = Business.query.paginate(
                                     page, limit, error_out=False).items
