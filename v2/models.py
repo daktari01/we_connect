@@ -1,6 +1,9 @@
 # v2/models.py
 
+import os
+
 from v2 import db 
+from . import create_app_v2
 
 class User(db.Model):
     """Class for the users model"""
@@ -38,3 +41,5 @@ class Review(db.Model):
     review_title = db.Column(db.String(150))
     review_text = db.Column(db.String(250))
     date_reviewed = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+

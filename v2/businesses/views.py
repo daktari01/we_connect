@@ -44,7 +44,22 @@ def retrieve_businesses():
     """Get all businesses from the database"""
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=9, type=int)
-    businesses = Business.query.paginate(page, limit, error_out=False).items
+    search_query = request.args.get('q', default=None, type=str)
+    search_category = request.args.get('category', default=None, type=str)
+    search_location = request.args.get('location', default=None, type=str)
+    if search_query:
+        businesses = Business.query.filter(Business.name.ilike(
+                search_query)).paginate(page, limit, error_out=False).items
+    elif search_category:
+        businesses = Business.query.filter(Business.category.ilike(
+                search_category)).paginate(page, limit, error_out=False).items
+    elif search_location:
+        businesses = Business.query.filter(Business.location.ilike(
+                search_location)).paginate(page, limit, error_out=False).items
+    else:
+        businesses = Business.query.paginate(
+                                    page, limit, error_out=False).items
+    # if search_query and 
     output = []
     # Get business data into a list of dictionaries
     for business in businesses:

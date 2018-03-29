@@ -13,7 +13,7 @@ db = SQLAlchemy()
 def create_app_v2(config_name):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
     migrate = Migrate(app, db)
     db.init_app(app)
 
