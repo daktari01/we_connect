@@ -156,6 +156,7 @@ def login():
 @auth.route('/reset-password', methods=['POST'])
 @token_required
 def reset_password(current_user):
+    password_error = []
     """Reset user password"""
     data = request.get_json()
     user = User.query.filter_by(username=current_user.username).first()
@@ -164,7 +165,13 @@ def reset_password(current_user):
     old_password = data['old_password']
     new_password = data['new_password']
     confirm_new_password = data['confirm_new_password']
-    
+    # Validate new password
+    if not validate_password(new_password):
+        error = {'Password error': 'Passwords must be at least 8 characters, '+
+                'contain at least an alphabet, a digit and a special character'}
+        password_error.append(error)
+    if password_error:
+        return jsonify(password_error)
     if new_password != confirm_new_password:
         return jsonify({'message': 'Your new password must match the confirm' +
             ' password before it can be reset.'})
