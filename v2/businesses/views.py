@@ -1,4 +1,5 @@
 import os
+import re
 import psycopg2
 from flask import Flask, request, jsonify
 
@@ -8,6 +9,31 @@ from v2.models import User, Business, Review
 from v2.auth.views import token_required
 from v2 import db
 
+def validate_business_name(name):
+    if re.match(r'((?=.*[A-Za-z])[0-9\s\-_\.]){2, 50}', name):
+        return True
+    return False
+def validate_web_address(address):
+    if re.match(r'(https:\/\/www\..*\.[a-z]{2,4}|http:\/\/www\..*\.[a-z]{2,4})',
+                                                                    address):
+        return True
+    return False
+def validate_location(location):
+    if re.match(r'((?=.*[A-Za-z])[0-9\s\-_\.,]){2, 100}', location):
+        return True
+    return False
+def validate_category(category):
+    if re.match(r'((?=.*[A-Za-z])[\s\-_\.,]){3, 100}', category):
+        return True
+    return False
+def validate_review_title(title):
+    if re.match(r'((?=.*[A-Za-z])[\s\-_\.]){5, 100}', title):
+        return True
+    return False
+def validate_review_text(text):
+    if re.match(r'((?=.*[A-Za-z])[0-9\s\-_\.\w]){5, 200}', text):
+        return True
+    return False
 @busn.route('/businesses', methods=['POST'])
 @token_required
 def create_business(current_user):
@@ -15,7 +41,27 @@ def create_business(current_user):
     data = request.get_json()
     web_address_error = {}
     busn_name_error = {}
+    validation_error = []
     businesses = Business.query.all()
+    # Validate user input
+    if not validate_business_name(data['name']):
+        error = {'Business name error': 'Business name can only contain '+
+                    'aplhanumeric and spaces with characters between 2-50'}
+        validation_error.append(error)
+    if not validate_web_address(data['web_address']):
+        error = {'Web address error': 'Web address is invalid. Provide only '+
+                                'the stem URL. It must contain http or https.'}
+        validation_error.append(error)
+    if not validate_location(data['location']):
+        error = {'Location error': 'Location can only contain alphanumeric,'+
+                            ' spaces and commas with characters between 2-100'}
+        validation_error.append(error)
+    if not validate_category(data['category']):
+        error = {'Category error': 'Category can only contain alphabets and'+
+                            ' spaces with characters between 2-100'}
+        validation_error.append(error)
+    if validation_error:
+        return jsonify(validation_error)
     # Get rid of duplicates
     for business in businesses:
         if data['name'] == business.name:
@@ -90,8 +136,28 @@ def retrieve_one_business(business_id):
 @token_required
 def edit_one_business(current_user, business_id):
     """Edit business details"""
+    validation_error = []
     business = Business.query.filter_by(id=business_id).first()
     data = request.get_json()
+    # Validate user input
+    if not validate_business_name(data['name']):
+        error = {'Business name error': 'Business name can only contain '+
+                    'aplhanumeric and spaces with characters between 2-50'}
+        validation_error.append(error)
+    if not validate_web_address(data['web_address']):
+        error = {'Web address error': 'Web address is invalid. Provide only '+
+                                'the stem URL. It must contain http or https.'}
+        validation_error.append(error)
+    if not validate_location(data['location']):
+        error = {'Location error': 'Location can only contain alphanumeric,'+
+                            ' spaces and commas with characters between 2-100'}
+        validation_error.append(error)
+    if not validate_category(data['category']):
+        error = {'Category error': 'Category can only contain alphabets and'+
+                            ' spaces with characters between 2-100'}
+        validation_error.append(error)
+    if validation_error:
+        return jsonify(validation_error)
     if not business:
         return jsonify({'message':'Business not found'})
     if business.user_id != current_user.id:
@@ -124,10 +190,22 @@ def delete_one_business(current_user, business_id):
 @token_required
 def post_review_for_business(current_user, business_id):
     """Post review for a business"""
+    review_error = []
     business = Business.query.filter_by(id=business_id).first()
     data = request.get_json()
     if not business:
         return jsonify({'message':'Business not found'})
+    if not validate_review_title(data['review_title']):
+        error = {'Review title error': 'Review title can only contain '+
+            'alphanumeric, spaces and commas with characters between 2-100'}
+        review_error.append(error)
+    if not validate_review_text(data['review_text']):
+        error = {'Review text error': 'Review text can only contain '+
+            'alphanumeric, spaces, periods, underscores and commas '+
+            'with characters between 2-100'}
+        review_error.append(error)
+    if review_error:
+        return jsonify(review_error)
     new_review = Review(rev_user_id=current_user.id, business_id=business_id,
                         review_title=data['review_title'], 
                         review_text=data['review_text'])
