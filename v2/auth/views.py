@@ -1,4 +1,5 @@
 import os
+import re
 import jwt
 import datetime
 import psycopg2
@@ -30,6 +31,24 @@ def token_required(fn):
         return fn(current_user, *args, **kwargs)
     return decorated
 
+def validate_names(name):
+    if re.match(r'^[a-zA-Z]{2,50}$', name):
+        return True
+    return False
+def validate_username(username):
+    if re.match(r'^[a-zA-Z0-9]{5,20}$', username):
+        return True
+    return False
+def validate_email(email):
+    if re.match(r'^[a-zA-Z0-9_\-\.]{3,}@.*\.[a-z]{2,4}$', email):
+        return True
+    return False
+def validate_password(password):
+    if re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])'+
+                    '[A-Za-z\d$@$!%*#?&]{8,}$', password):
+        return True
+    return False
+
 @auth.route('/register', methods=['POST'])
 def register():
     """Register new user to the system"""
@@ -37,6 +56,30 @@ def register():
     users = User.query.all()
     email_error = {}
     username_error = {}
+    validation_error = []
+    # Validate user input
+    if not validate_names(data['first_name']):
+        error = {'First name error': 
+            'First name must contain only alphabets between 2 to 50 characters'}
+        validation_error.append(error)
+    if not validate_names(data['last_name']):
+        error = {'Last name error': 
+            'Last name must contain only alphabets between 2 to 50 characters'}
+        validation_error.append(error)
+    if not validate_username(data['username']):
+        error = {'Username error': 
+            'Username must contain only alphanumeric between 5 '+
+                                                        'to 20 characters'}
+        validation_error.append(error)
+    if not validate_email(data['email']):
+        error = {'Email error': 'Email is not valid'}
+        validation_error.append(error)
+    if not validate_password(data['first_password']):
+        error = {'Password error': 'Passwords must be at least 8 characters, '+
+                'contain at least an alphabet, a digit and a special character'}
+        validation_error.append(error)
+    if validation_error:
+        return jsonify(validation_error)
     first_password = generate_password_hash(data['first_password'])
     if not check_password_hash(first_password, data['confirm_password']):
         return({'message': 'Your passwords do not match! Try again'})
@@ -71,7 +114,11 @@ def get_users(current_user):
     """Retrieve all users from the database"""
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=10, type=int)
-    users = User.query.paginate(page, limit, error_out=False)
+    search_query = request.args.get('q', default=None, type=str)
+    if search_query:
+        users = User.query.filter(User.username.ilike('%'+
+            search_query+'%')).paginate(page, limit, error_out=False).items
+    users = User.query.paginate(page, limit, error_out=False).items
     output = []
     # Get user data into a list of dictionaries
     for user in users:

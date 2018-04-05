@@ -16,18 +16,18 @@ class TestWeconnect(unittest.TestCase):
         self.client = self.app.test_client
         self.test_user = {"username":"morris", "first_name" : "Morris",
             "last_name" : "Maluni", "email":"maluni@weconnect.com",
-            "first_password":"maluni123", "confirm_password":"maluni123"}
+            "first_password":"maluni123$", "confirm_password":"maluni123$"}
         self.test_user2 = {"username":"persontest", "first_name" : "Person",
             "last_name" : "Test", "email":"person@weconnect.com",
             "first_password":"Person123", "confirm_password":"Person123"}
         self.login_user = {"username":"login", "first_name" : "Login",
             "last_name" : "User", "email":"login.user@weconnect.com",
-            "first_password":"login123", "confirm_password":"login123"}
-        self.test_login = {"username":"morris", "password":"maluni123"}
-        self.user_login = {"username":"login", "password":"login123"}
-        self.reset_password = {"old_password": "maluni123",
-                                "new_password": "maluni456",
-                                "confirm_new_password": "maluni456"}
+            "first_password":"login123&", "confirm_password":"login123&"}
+        self.test_login = {"username":"morris", "password":"maluni123$"}
+        self.user_login = {"username":"login", "password":"login123&"}
+        self.reset_password = {"old_password": "maluni123$",
+                                "new_password": "maluni456%",
+                                "confirm_new_password": "maluni456%"}
         self.test_business = {"name":"Andela", "location":"Nairobi, Kenya",
                                 "category": "Software development",
                                 "web_address":"www.andela.com"}
