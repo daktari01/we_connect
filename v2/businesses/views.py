@@ -157,7 +157,7 @@ def edit_one_business(current_user, business_id):
                             ' spaces with characters between 2-100'}
         validation_error.append(error)
     if validation_error:
-        return jsonify(validation_error)
+        return jsonify({'Business validation error' : validation_error})
     if not business:
         return jsonify({'message':'Business not found'})
     if business.user_id != current_user.id:
@@ -205,7 +205,7 @@ def post_review_for_business(current_user, business_id):
             'with characters between 2-100'}
         review_error.append(error)
     if review_error:
-        return jsonify(review_error)
+        return jsonify({'review validation error' : review_error})
     new_review = Review(rev_user_id=current_user.id, business_id=business_id,
                         review_title=data['review_title'], 
                         review_text=data['review_text'])

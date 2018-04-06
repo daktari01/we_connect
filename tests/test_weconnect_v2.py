@@ -19,7 +19,7 @@ class TestWeconnect(unittest.TestCase):
             "first_password":"maluni123$", "confirm_password":"maluni123$"}
         self.test_user2 = {"username":"persontest", "first_name" : "Person",
             "last_name" : "Test", "email":"person@weconnect.com",
-            "first_password":"Person123", "confirm_password":"Person123"}
+            "first_password":"Person123##", "confirm_password":"Person123##"}
         self.login_user = {"username":"login", "first_name" : "Login",
             "last_name" : "User", "email":"login.user@weconnect.com",
             "first_password":"login123&", "confirm_password":"login123&"}

@@ -79,7 +79,7 @@ def register():
                 'contain at least an alphabet, a digit and a special character'}
         validation_error.append(error)
     if validation_error:
-        return jsonify(validation_error)
+        return jsonify({'Validation erro': validation_error})
     first_password = generate_password_hash(data['first_password'])
     if not check_password_hash(first_password, data['confirm_password']):
         return({'message': 'Your passwords do not match! Try again'})
@@ -171,7 +171,7 @@ def reset_password(current_user):
                 'contain at least an alphabet, a digit and a special character'}
         password_error.append(error)
     if password_error:
-        return jsonify(password_error)
+        return jsonify({'Validation error': password_error})
     if new_password != confirm_new_password:
         return jsonify({'message': 'Your new password must match the confirm' +
             ' password before it can be reset.'})
