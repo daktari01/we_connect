@@ -17,9 +17,9 @@ User login
 
 Reset_password
 {
-    "old_password": "maluni123",
-    "new_password": "maluni456",
-    "confirm_new_password": "maluni456"
+    "old_password": "maluni123&",
+    "new_password": "maluni456%",
+    "confirm_new_password": "maluni456%"
 }
 
 Create business
@@ -27,7 +27,7 @@ Create business
     "name":"Andela",
     "location":"Nairobi, Kenya",
     "category": "Software development",
-    "web_address":"www.andela.com"
+    "web_address":"https://www.andela.com"
 }
 
 Business 2
@@ -35,7 +35,7 @@ Business 2
     "name":"Google",
     "location":"San Francisco, CA",
     "category": "Web development",
-    "web_address":"www.google.com"
+    "web_address":"https://www.google.com"
 }
 
 Business 3
@@ -43,7 +43,7 @@ Business 3
     "name":"Cocacola",
     "location":"Atlanta, GA",
     "category": "Food and beverages",
-    "web_address":"www.cocacola.com"
+    "web_address":"http://www.cocacola.com"
 }
 
 Reviews

@@ -4,15 +4,15 @@ import json
 import psycopg2
 from sqlalchemy.exc import IntegrityError
 
-from v2 import db, create_app_v2
-from v2.models import User, Review, Business
+from app import db, create_app
+from app.v2.models import User, Review, Business
 
 class TestWeconnect(unittest.TestCase):
     """Class that contains tests for the version 2 of WeConnect"""
 
     def setUp(self):
         """Initaliaze variables to be used in testing"""
-        self.app = create_app_v2(config_name="testing")
+        self.app = create_app(config_name="testing")
         self.client = self.app.test_client
         self.test_user = {"username":"morris", "first_name" : "Morris",
             "last_name" : "Maluni", "email":"maluni@weconnect.com",

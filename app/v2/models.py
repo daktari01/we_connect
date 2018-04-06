@@ -2,8 +2,8 @@
 
 import os
 
-from v2 import db 
-from . import create_app_v2
+from app import db 
+from app import create_app
 
 class User(db.Model):
     """Class for the users model"""

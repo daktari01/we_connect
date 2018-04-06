@@ -5,9 +5,9 @@ from flask import Flask, request, jsonify
 
 # Local imports
 from . import busn
-from v2.models import User, Business, Review
-from v2.auth.views import token_required
-from v2 import db
+from app.v2.models import User, Business, Review
+from app.v2.auth.views import token_required
+from app import db
 
 def validate_business_name(name):
     if re.match(r'^(?=.*[A-Za-z])[a-zA-Z0-9\s]{2,50}$', name):

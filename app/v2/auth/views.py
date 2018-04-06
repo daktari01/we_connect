@@ -10,8 +10,8 @@ from functools import wraps
 
 # Local imports
 from . import auth
-from v2.models import User
-from v2 import db
+from app.v2.models import User
+from app import db
 
 def token_required(fn):
     """Decorator to require authentication token"""
