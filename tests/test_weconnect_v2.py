@@ -30,13 +30,13 @@ class TestWeconnect(unittest.TestCase):
                                 "confirm_new_password": "maluni456%"}
         self.test_business = {"name":"Andela", "location":"Nairobi, Kenya",
                                 "category": "Software development",
-                                "web_address":"www.andela.com"}
+                                "web_address":"https://www.andela.com"}
         self.test_business2 = {"name":"Google", "location":"San Francisco, CA",
                                 "category": "Web development",
-                                "web_address":"www.google.com"}
+                                "web_address":"https://www.google.com"}
         self.test_business3 = {"name":"Cocacola", "location":"Atlanta, GA",
                                 "category": "Food and beverages",
-                                "web_address":"www.cocacola.com"}
+                                "web_address":"http://www.cocacola.com"}
         self.test_review = {"review_title": "I liked it",
                             "review_text": "Lorem ipsum dolor sit amet"}
         # Set up the token

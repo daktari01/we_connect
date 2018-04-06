@@ -10,7 +10,7 @@ from v2.auth.views import token_required
 from v2 import db
 
 def validate_business_name(name):
-    if re.match(r'((?=.*[A-Za-z])[0-9\s\-_\.]){2, 50}', name):
+    if re.match(r'^(?=.*[A-Za-z])[a-zA-Z0-9\s]{2,50}$', name):
         return True
     return False
 def validate_web_address(address):
@@ -19,19 +19,19 @@ def validate_web_address(address):
         return True
     return False
 def validate_location(location):
-    if re.match(r'((?=.*[A-Za-z])[0-9\s\-_\.,]){2, 100}', location):
+    if re.match(r'^(?=.*[A-Za-z])[a-zA-Z0-9\s,]{2,100}$', location):
         return True
     return False
 def validate_category(category):
-    if re.match(r'((?=.*[A-Za-z])[\s\-_\.,]){3, 100}', category):
+    if re.match(r'^(?=.*[A-Za-z])[a-zA-Z0-9\s,]{2,100}$', category):
         return True
     return False
 def validate_review_title(title):
-    if re.match(r'((?=.*[A-Za-z])[\s\-_\.]){5, 100}', title):
+    if re.match(r'^(?=.*[A-Za-z])[a-zA-Z0-9\s]{2,100}$', title):
         return True
     return False
 def validate_review_text(text):
-    if re.match(r'((?=.*[A-Za-z])[0-9\s\-_\.\w]){5, 200}', text):
+    if re.match(r'^(?=.*[A-Za-z])[^!@#\$%\^\*:]{2,200}$', text):
         return True
     return False
 @busn.route('/businesses', methods=['POST'])
