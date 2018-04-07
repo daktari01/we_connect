@@ -17,13 +17,6 @@ before_script:
   - flask db upgrade
 script: nosetests --with-coverage --cover-package=app
 
-env:
-  - DB=postgres
-  - FLASK_APP=run.py
-  - FLASK_CONFIG=production
-  - SECRET_KEY="*Jsh^6K#$M5c@"
-  - TEST_DATABASE_URL="postgres:///weconnect_test"
-
 after_success:
   - coveralls
 
@@ -33,6 +26,9 @@ notifications:
     on_failure: never
   email: false
 
+env:
+  - DB=postgres
+  - FLASK_APP=run.py
 
 
 
