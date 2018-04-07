@@ -26,9 +26,6 @@ notifications:
     on_failure: never
   email: false
 
-env:
-  - DB=postgres
-  - FLASK_APP=run.py
 
 
 
