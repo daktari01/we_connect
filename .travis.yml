@@ -4,14 +4,25 @@ language: python
 python:
   - "2.7"
 
+services:
+  - postgresql
 
 install:
-
   - pip install coveralls
   - pip install -r requirements.txt
 
 # command to run tests
+before_script:
+  - psql -c 'create database weconnect_test;' -U postgres
+  - flask db upgrade
 script: nosetests --with-coverage --cover-package=app
+
+env:
+  - DB=postgres
+  - FLASK_APP=run.py
+  - FLASK_CONFIG=production
+  - SECRET_KEY=*Jsh^6K#$M5c@
+  - TEST_DATABASE_URL=postgres:///weconnect_test
 
 after_success:
   - coveralls
