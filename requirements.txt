@@ -28,4 +28,3 @@ python-dateutil==2.7.0
 python-editor==1.0.3
 pytz==2017.2
 six==1.11.0
-wsgiref==0.1.2

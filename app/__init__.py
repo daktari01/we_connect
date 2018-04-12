@@ -17,19 +17,19 @@ def create_app(config_name):
     db.init_app(app)
 
     # Register the auth_v1 blueprint
-    from v1.auth import auth_v1 as auth_blueprint_v1
+    from app.v1.auth import auth_v1 as auth_blueprint_v1
     app.register_blueprint(auth_blueprint_v1, url_prefix='/api/v1/auth')
 
     # Register the busy_v1 blueprint
-    from v1.businesses import busy_v1 as busy_blueprint_v1
+    from app.v1.businesses import busy_v1 as busy_blueprint_v1
     app.register_blueprint(busy_blueprint_v1, url_prefix='/api/v1')
     
     # Register the auth_v2 blueprint
-    from v2.auth import auth as auth_blueprint_v2
+    from app.v2.auth import auth as auth_blueprint_v2
     app.register_blueprint(auth_blueprint_v2, url_prefix='/api/v2/auth')
 
     # Register the busy_v2 blueprint
-    from v2.businesses import busn as busn_blueprint_v2
+    from app.v2.businesses import busn as busn_blueprint_v2
     app.register_blueprint(busn_blueprint_v2, url_prefix='/api/v2')
               
     return app
