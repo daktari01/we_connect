@@ -1,11 +1,10 @@
-import os
 import re
 import psycopg2
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 
 # Local imports
 from . import busn
-from app.v2.models import User, Business, Review
+from app.v2.models import Business, Review
 from app.v2.auth.views import token_required
 from app import db
 
@@ -74,7 +73,7 @@ def create_business(current_user):
         return jsonify(busn_name_error)
     if web_address_error:
         return jsonify(web_address_error)
-    new_business = Business(user_id=current_user.id, name=data['name'], 
+    new_business = Business(user_id=current_user.id, name=data['name'],
                     location=data['location'], category = data['category'],
                     web_address = data['web_address'])
     # Save to the database
@@ -84,7 +83,7 @@ def create_business(current_user):
         return jsonify({'message': 'Business registered successfully'})
     except (Exception, psycopg2.DatabaseError) as error:
         return jsonify(str(error))
-    
+
 @busn.route('/businesses', methods=['GET'])
 def retrieve_businesses():
     """Get all businesses from the database"""
@@ -105,7 +104,6 @@ def retrieve_businesses():
     else:
         businesses = Business.query.paginate(
                                     page, limit, error_out=False).items
-    # if search_query and 
     output = []
     # Get business data into a list of dictionaries
     for business in businesses:
@@ -207,7 +205,7 @@ def post_review_for_business(current_user, business_id):
     if review_error:
         return jsonify({'review validation error' : review_error})
     new_review = Review(rev_user_id=current_user.id, business_id=business_id,
-                        review_title=data['review_title'], 
+                        review_title=data['review_title'],
                         review_text=data['review_text'])
     # Save to the database
     try:

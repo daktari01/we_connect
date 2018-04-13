@@ -3,7 +3,7 @@ import jwt
 import uuid
 import datetime
 from functools import wraps 
-from flask import Flask, request, jsonify, make_response
+from flask import request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Local imports

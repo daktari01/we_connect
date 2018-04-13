@@ -6,7 +6,7 @@ import psycopg2
 
 from flask import Flask, request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps 
+from functools import wraps
 
 # Local imports
 from . import auth
@@ -59,15 +59,15 @@ def register():
     validation_error = []
     # Validate user input
     if not validate_names(data['first_name']):
-        error = {'First name error': 
+        error = {'First name error':
             'First name must contain only alphabets between 2 to 50 characters'}
         validation_error.append(error)
     if not validate_names(data['last_name']):
-        error = {'Last name error': 
+        error = {'Last name error':
             'Last name must contain only alphabets between 2 to 50 characters'}
         validation_error.append(error)
     if not validate_username(data['username']):
-        error = {'Username error': 
+        error = {'Username error':
             'Username must contain only alphanumeric between 5 '+
                                                         'to 20 characters'}
         validation_error.append(error)
@@ -97,7 +97,7 @@ def register():
     if email_error:
         return jsonify(email_error)
     new_user = User(first_name=data['first_name'], last_name=data['last_name'],
-        username=data['username'], email=data['email'], 
+        username=data['username'], email=data['email'],
         first_password=first_password, confirm_password=confirm_password)
     # Save to database
     try:
@@ -106,7 +106,7 @@ def register():
         return jsonify({'message': 'User registered successfully'})
     except (Exception, psycopg2.DatabaseError) as error:
         return jsonify(str(error))
-    
+
 
 @auth.route('/users', methods=['GET'])
 @token_required
@@ -136,7 +136,7 @@ def login():
     data = request.get_json()
     # Check if required login information is missing
     if not data['username'] or not data['password']:
-        return make_response("WeConnect was unable to authenticate", 401, 
+        return make_response("WeConnect was unable to authenticate", 401,
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
     user = User.query.filter_by(username=data['username']).first()
     # Check if user is not in system
@@ -145,7 +145,7 @@ def login():
                 {'WWW-Authenticate' : 'Basic realm="User not found. Register.'})
     # Check if password given matches password in WeConnect
     if check_password_hash(user.first_password, data['password']):
-        token = jwt.encode({'username' : user.username, 
+        token = jwt.encode({'username' : user.username,
             'exp' : datetime.datetime.utcnow() + datetime.timedelta(
                 minutes=30)}, os.getenv('SECRET_KEY'))
         return jsonify({'token' : token.decode('UTF-8')}), 200
@@ -156,8 +156,8 @@ def login():
 @auth.route('/reset-password', methods=['POST'])
 @token_required
 def reset_password(current_user):
-    password_error = []
     """Reset user password"""
+    password_error = []
     data = request.get_json()
     user = User.query.filter_by(username=current_user.username).first()
     if not user:

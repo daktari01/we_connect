@@ -94,7 +94,7 @@ def fn_business(current_user, business_id):
         business_i.businesses.pop(single_business['business_id'])
         return jsonify({"message" : "Business deleted successfully"}), 200
 
-@busy_v1.route('/businesses/<int:business_id>/reviews', 
+@busy_v1.route('/businesses/<int:business_id>/reviews',
                 methods=['GET', 'POST'])
 @token_required
 def fn_reviews(current_user, business_id):

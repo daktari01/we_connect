@@ -1,9 +1,6 @@
 # v2/models.py
 
-import os
-
-from app import db 
-from app import create_app
+from app import db
 
 class User(db.Model):
     """Class for the users model"""
@@ -18,8 +15,8 @@ class User(db.Model):
     confirm_password = db.Column(db.String(250))
     businesses = db.relationship('Business', backref='user', lazy='dynamic')
     reviews = db.relationship('Review', backref='user', lazy='dynamic')
-    
-    
+
+
 class Business(db.Model):
     """Class for the businesses model"""
     __tablename__ = 'businesses'

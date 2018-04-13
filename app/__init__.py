@@ -1,7 +1,6 @@
 # app/__init__.py
-import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy 
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 # Local imports
@@ -23,7 +22,7 @@ def create_app(config_name):
     # Register the busy_v1 blueprint
     from app.v1.businesses import busy_v1 as busy_blueprint_v1
     app.register_blueprint(busy_blueprint_v1, url_prefix='/api/v1')
-    
+
     # Register the auth_v2 blueprint
     from app.v2.auth import auth as auth_blueprint_v2
     app.register_blueprint(auth_blueprint_v2, url_prefix='/api/v2/auth')
@@ -31,5 +30,5 @@ def create_app(config_name):
     # Register the busy_v2 blueprint
     from app.v2.businesses import busn as busn_blueprint_v2
     app.register_blueprint(busn_blueprint_v2, url_prefix='/api/v2')
-              
+
     return app

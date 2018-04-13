@@ -8,7 +8,7 @@ from app.v2.businesses.views import validate_business_name, \
 
 class TestRegex(unittest.TestCase):
     """Test the regular expression functions"""
-    
+
     def test_validate_names(self):
         """Test that only valid names will be allowed"""
         correct_name = 'John'

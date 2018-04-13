@@ -1,9 +1,8 @@
-import os
 import unittest
 import json
 from app import create_app
 
-from app.v1.models import User, Business, Review
+from app.v1.models import User, Business
 
 class TestAuthentication(unittest.TestCase):
     """Class to test API authentication"""
