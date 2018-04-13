@@ -1,0 +1,587 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "WeConnect is an application that allows users to review businesses.",
+    "version": "2.0.0",
+    "title": "WeConnect",
+    "contact": {
+      "email": "dindijjames@gmail.com"
+    },
+    "license": {
+      "name": "MIT Licence",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "daktari01-weconnect.herokuapp.com",
+  "basePath": "/api/v2",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Register a new user",
+        "description": "",
+        "operationId": "registerUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Create a new user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Register"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Username/Email already exists. Try another one."
+          },
+          "201": {
+            "description": "User registered successfully"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Log a registered user in",
+        "description": "",
+        "operationId": "loginUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Log user into the system",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token string generated"
+          },
+          "401": {
+            "description": "WeConnect was unable to authenticate"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Reset user password",
+        "description": "Reset password of a user",
+        "operationId": "resetPassword",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Reset user password",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Resetpassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset successful"
+          }
+        }
+      }
+    },
+    "/auth/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get all users",
+        "description": "Retrieve all users registered in the system.",
+        "operationId": "getUsers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Retrieve all users from the system",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User(s) retrieved successfully"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/businesses": {
+      "post": {
+        "tags": [
+          "businesses"
+        ],
+        "summary": "Register a new business",
+        "description": "",
+        "operationId": "registerBusiness",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Create a new business",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Business"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business name/Web address already exists. Try another one."
+          },
+          "201": {
+            "description": "Business registered successfully"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "businesses"
+        ],
+        "summary": "Get all businesses",
+        "description": "Retrieve all businesses in the system.",
+        "operationId": "getBusinesses",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Business(es) retrieved successfully"
+          },
+          "404": {
+            "description": "Business not found"
+          }
+        }
+      }
+    },
+    "/businesses/{business_id}": {
+      "get": {
+        "tags": [
+          "business"
+        ],
+        "summary": "Find business by ID",
+        "description": "Returns a single business",
+        "operationId": "getBusinessById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "description": "ID of business to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business found",
+            "schema": {
+              "$ref": "#/definitions/Business"
+            }
+          },
+          "404": {
+            "description": "Business not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "business"
+        ],
+        "summary": "Updates a business in the system",
+        "description": "",
+        "operationId": "updateBusiness",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the business"
+          },
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Update a business",
+            "description": "business",
+            "schema": {
+              "$ref": "#/definitions/Business"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business name/Web address already exists. Try another one."
+          },
+          "201": {
+            "description": "Business updated successfully"
+          },
+          "403": {
+            "description": "A user can only update own businesses"
+          },
+          "404": {
+            "description": "Business not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "business"
+        ],
+        "summary": "Deletes a business in the system",
+        "description": "",
+        "operationId": "deleteBusiness",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the business"
+          },
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Delete a business",
+            "description": "business",
+            "schema": {
+              "$ref": "#/definitions/Business"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business deleted successfully"
+          },
+          "403": {
+            "description": "A user can only delete own businesses"
+          },
+          "404": {
+            "description": "Business not found"
+          }
+        }
+      }
+    },
+    "/business/{business_id}/reviews": {
+      "post": {
+        "tags": [
+          "review"
+        ],
+        "summary": "Posts a review about a business in the system",
+        "description": "",
+        "operationId": "postReview",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the business"
+          },
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "Post a review",
+            "description": "review",
+            "schema": {
+              "$ref": "#/definitions/Review"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review posted successfully"
+          },
+          "404": {
+            "description": "Business/Review not found"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "review"
+        ],
+        "summary": "Retrieve reviews of a business",
+        "description": "Returns a single business",
+        "operationId": "getBusinessReviews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "description": "ID of business to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review(s) found",
+            "schema": {
+              "$ref": "#/definitions/Review"
+            }
+          },
+          "404": {
+            "description": "Business/Review not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Register": {
+      "type": "object",
+      "required": [
+        "username",
+        "email",
+        "name",
+        "first_password",
+        "confirm_password"
+      ],
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "first_password": {
+          "type": "string"
+        },
+        "confirm_password": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "username": "john",
+        "email": "john.doe@weconnect.com",
+        "name": "John Doe",
+        "password": "johnie$$12",
+        "confirm_passord": "johnie$$12"
+      }
+    },
+    "Login": {
+      "type": "object",
+      "required": [
+        "username",
+        "password"
+      ],
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "username": "john",
+        "password": "johnie$$12"
+      }
+    },
+    "Resetpassword": {
+      "type": "object",
+      "required": [
+        "old_password",
+        "new_password",
+        "confirm_new_password"
+      ],
+      "properties": {
+        "old_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "confirm_new_password": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "old_password": "johnie$$12",
+        "new_password": "JDoe#%43",
+        "confirm_new_password": "JDoe#%43"
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": [
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "password",
+        "confirm_password"
+      ],
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "confirm_password": {
+          "type": "string"
+        }
+      }
+    },
+    "Business": {
+      "type": "object",
+      "required": [
+        "name",
+        "location",
+        "web_address",
+        "category"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "web_address": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        }
+      }
+    },
+    "Review": {
+      "type": "object",
+      "required": [
+        "review_title",
+        "review_text"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "review_title": {
+          "type": "string"
+        },
+        "review_text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
