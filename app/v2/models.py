@@ -16,7 +16,6 @@ class User(db.Model):
     businesses = db.relationship('Business', backref='user', lazy='dynamic')
     reviews = db.relationship('Review', backref='user', lazy='dynamic')
 
-
 class Business(db.Model):
     """Class for the businesses model"""
     __tablename__ = 'businesses'

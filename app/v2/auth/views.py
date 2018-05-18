@@ -31,6 +31,12 @@ def token_required(fn):
         return fn(current_user, *args, **kwargs)
     return decorated
 
+def confirm_email(fn):
+    """Decorator to require confirmation of email"""
+    @wraps(fn)
+    def decorated(*args, **kwargs):
+        pass
+
 def validate_names(name):
     if re.match(r'^[a-zA-Z]{2,50}$', name):
         return True
@@ -48,6 +54,10 @@ def validate_password(password):
                     '[A-Za-z\d$@$!%*#?&]{8,}$', password):
         return True
     return False
+
+@auth.route('/confirm_email/<token>')
+def confirm_email(token):
+    pass
 
 @auth.route('/register', methods=['POST'])
 def register():
