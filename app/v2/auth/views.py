@@ -79,7 +79,7 @@ def register():
                 'contain at least an alphabet, a digit and a special character'}
         validation_error.append(error)
     if validation_error:
-        return jsonify({'Validation erro': validation_error})
+        return jsonify({'Validation error': validation_error})
     first_password = generate_password_hash(data['first_password'])
     if not check_password_hash(first_password, data['confirm_password']):
         return({'message': 'Your passwords do not match! Try again'})
