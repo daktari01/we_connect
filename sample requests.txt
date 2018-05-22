@@ -59,7 +59,7 @@ User registration
     "username":"morris",
     "first_name" : "Morris",
     "last_name" : "Maluni",
-    "email":"maluni@weconnect.com",
-    "first_password":"maluni123&",
-    "confirm_password":"maluni123&"
+    "email":"daktari.weconnect@gmail.com",
+    "first_password":"weconnectus#@1",
+    "confirm_password":"weconnectus#@1"
 }
