@@ -4,20 +4,29 @@ import jwt
 import datetime
 import psycopg2
 
-from flask import Flask, request, jsonify, make_response, url_for, current_app
-from flask_mail import Mail, Message
+from flask import Flask, request, jsonify, make_response, url_for
+from flask_mail import Message, Mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from itsdangerous import BadTimeSignature 
 from functools import wraps
-from app import mail
+
+app = Flask(__name__)
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = 587
+app.config['EMAIL_TIMEOUT'] = 20
+app.config['MAIL_USE_TLS'] = 1
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+
+mail = Mail(app)
 
 # Local imports
 from . import auth
 from app.v2.models import User
 from app import db
 
-# mail = Mail(current_app.app)
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 
 def token_required(fn):
@@ -118,7 +127,8 @@ def register():
         return jsonify(email_error)
     new_user = User(first_name=data['first_name'], last_name=data['last_name'],
         username=data['username'], email=data['email'],
-        first_password=first_password, confirm_password=confirm_password)
+        first_password=first_password, confirm_password=confirm_password, 
+        email_confirmed = False)
     # Save to database
     try:
         db.session.add(new_user)
@@ -126,27 +136,36 @@ def register():
     except (Exception, psycopg2.DatabaseError) as error:
         return jsonify(str(error))
     # Send activation email to user
-    email = data['email']
-    token = serializer.dumps(email, salt="email-confirmation-salt")
-    msg = Message('Confirm email', sender='daktari.weconnect@gmail.com', 
-                                    recipients=[email])
-    link = url_for('confirm_email', token=token, _external=True)
-    msg.body = "Your activation link is {}".format(link)
-    mail.send(msg)
-    return jsonify({'message': 'User registered successfully. Check your'+
-                                ' email address for an activation'+
-                                ' link to activate your email'})
+    try:
+        email = data['email']
+        token = serializer.dumps(email, salt="email-confirmation-salt")
+        msg = Message('Confirm email', sender='daktari.weconnect@gmail.com', 
+                                        recipients=[email])
+        link = url_for('auth.confirm_email', token=token, _external=True)
+        msg.body = "Click on this link to activate your account {}".format(link)
+        mail.send(msg)
+        return jsonify({'message': 'User registered successfully. Check your'+
+                                    ' email address for an activation'+
+                                    ' link to activate your account'})
+    except:
+        return jsonify({"message": "Sorry, the link was not sent. Try again"})
 
-@auth.route('/confirm_email/<token>')
+@auth.route('/confirm_email/<token>', methods=['GET', 'POST'])
 def confirm_email(token):
     try:
         email = serializer.loads(token, salt="email-confirmation-salt", 
-                                        max_age=60)
+                                            max_age=1800)
     except SignatureExpired:
-        return jsonify({"message": "Sorry, the token is expired!"})
+        return "<h3>Sorry, The token is expired!</h3>"
     except BadTimeSignature:
-        return jsonify({"message": "Sorry, the token is not correct!"})
-    return jsonify({"message": "The token works!"})
+        return "<h3>Sorry, The token is not correct!</h3>"
+    # Activate user email
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return({"message": "User not found"})
+    user.email_confirmed = True
+    db.session.commit()
+    return "<h3>Your account is activated!</h3>"
 
 @auth.route('/users', methods=['GET'])
 @token_required

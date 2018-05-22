@@ -17,9 +17,6 @@ class User(db.Model):
     businesses = db.relationship('Business', backref='user', lazy='dynamic')
     reviews = db.relationship('Review', backref='user', lazy='dynamic')
 
-    def __init__(self):
-        self.email_confirmed = False
-
 class Business(db.Model):
     """Class for the businesses model"""
     __tablename__ = 'businesses'
