@@ -31,4 +31,8 @@ def create_app(config_name):
     from app.v2.businesses import busn as busn_blueprint_v2
     app.register_blueprint(busn_blueprint_v2, url_prefix='/api/v2')
 
+    # Register the errors blueprint
+    from app.v2.errors.handlers import errors as errors_blueprint
+    app.register_blueprint(errors_blueprint)
+
     return app

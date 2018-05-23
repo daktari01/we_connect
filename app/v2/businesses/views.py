@@ -241,4 +241,3 @@ def get_reviews_for_business(business_id):
         review_data['date_reviewed'] = review.date_reviewed
         output.append(review_data)
     return jsonify({'reviews' : output}), 200
-    

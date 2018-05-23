@@ -88,6 +88,12 @@ def validate_password(password):
         return True
     return False
 
+# Handle 404 error
+@auth.errorhandler(404)
+def page_not_found(e):
+    return jsonify({"message": "The page you are looking for "+
+                                    "does not exist."}), 404
+
 @auth.route('/register', methods=['POST'])
 def register():
     """Register new user to the system"""
@@ -125,7 +131,7 @@ def register():
     confirm_password = generate_password_hash(data['confirm_password'])
     # Get rid of duplicate username and email
     for user in users:
-        if data['username'] == user.username:
+        if (data['username']).lower() == (user.username).lower():
             username_error = {'message': 'Username already exists.'+
                                         ' Try another one.'}
         if data['email'] == user.email:
@@ -291,3 +297,4 @@ def logout(current_user):
     current_user.logged_in = False
     db.session.commit()
     return jsonify({'message':'Log out successful'}), 200
+
