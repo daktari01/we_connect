@@ -18,7 +18,6 @@ User login
 
 Reset_password
 {
-    "old_password": "maluni123&",
     "new_password": "maluni456%",
     "confirm_new_password": "maluni456%"
 }
@@ -56,10 +55,26 @@ Reviews
 Version 2
 User registration
 {
-    "username":"morris",
-    "first_name" : "Morris",
-    "last_name" : "Maluni",
-    "email":"daktari.weconnect@gmail.com",
-    "first_password":"weconnectus#@1",
-    "confirm_password":"weconnectus#@1"
+    "username":"james",
+    "first_name" : "James",
+    "last_name" : "Jerrie",
+    "email":"james.dindi@andela.com",
+    "first_password":"babayao#@1",
+    "confirm_password":"babayao#@1"
+}
+
+User login
+{
+    "username":"james",
+    "password":"babayao#@1"
+}
+
+Reset password
+{
+    "email": "james.dindi@andela.com"
+}
+reset
+{
+    "new_password": "mamayao#@1",
+    "confirm_new_password": "mamayao#@1"
 }

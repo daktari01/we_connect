@@ -11,6 +11,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from itsdangerous import BadTimeSignature 
 from functools import wraps
 
+# Email configurations
 app = Flask(__name__)
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
 app.config['MAIL_PORT'] = 587
@@ -47,18 +48,15 @@ def token_required(fn):
         return fn(current_user, *args, **kwargs)
     return decorated
 
-# def email_confirmed(fn):
-#     """Decorator to require confirmation of email"""
-#     @wraps(fn)
-#     def decorated(user_email, *args, **kwargs):
-#         # confirm_serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
-#         # confirm_url = url_for(
-#         #     'users.confirm_email',
-#         #     token=confirm_serializer.dumps(user_email, 
-#         #     salt='eamil-confirmation-salt'),
-#         #     _external=True)
-#         # send_email('Confirm your email address', [user_email])
-#         pass
+def email_confirmed(fn):
+    """Decorator to require confirmation of email"""
+    @wraps(fn)
+    def decorated(*args, **kwargs):
+        user = args[0]
+        if not user.email_confirmed:
+            return jsonify({"message": "Your account has not been activated."})
+        return fn(*args, **kwargs)
+    return decorated
 
 def validate_names(name):
     if re.match(r'^[a-zA-Z]{2,50}$', name):
@@ -108,7 +106,7 @@ def register():
                 'contain at least an alphabet, a digit and a special character'}
         validation_error.append(error)
     if validation_error:
-        return jsonify({'Validation erro': validation_error})
+        return jsonify({'Validation error': validation_error})
     first_password = generate_password_hash(data['first_password'])
     if not check_password_hash(first_password, data['confirm_password']):
         return({'message': 'Your passwords do not match! Try again'})
@@ -152,6 +150,7 @@ def register():
 
 @auth.route('/confirm_email/<token>', methods=['GET', 'POST'])
 def confirm_email(token):
+    """Method to confirm user email"""
     try:
         email = serializer.loads(token, salt="email-confirmation-salt", 
                                             max_age=1800)
@@ -169,6 +168,7 @@ def confirm_email(token):
 
 @auth.route('/users', methods=['GET'])
 @token_required
+@email_confirmed
 def get_users(current_user):
     """Retrieve all users from the database"""
     page = request.args.get('page', default=1, type=int)
@@ -195,12 +195,13 @@ def login():
     data = request.get_json()
     # Check if required login information is missing
     if not data['username'] or not data['password']:
-        return make_response("WeConnect was unable to authenticate", 401,
+        return make_response("Both username and password must be provided.", 401,
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
     user = User.query.filter_by(username=data['username']).first()
+
     # Check if user is not in system
     if not user:
-        return make_response("WeConnect was unable to authenticate", 401, 
+        return make_response("User not found.", 401, 
                 {'WWW-Authenticate' : 'Basic realm="User not found. Register.'})
     # Check if password given matches password in WeConnect
     if check_password_hash(user.first_password, data['password']):
@@ -209,21 +210,45 @@ def login():
                 minutes=30)}, os.getenv('SECRET_KEY'))
         return jsonify({'token' : token.decode('UTF-8')}), 200
     # Check if authentication fails
-    return make_response("WeConnect was unable to authenticate", 401, 
+    return make_response("Your username does not match the password", 401, 
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
                 
 @auth.route('/reset-password', methods=['POST'])
-@token_required
-def reset_password(current_user):
+def reset_password():
     """Reset user password"""
+    data = request.get_json()
+    # Send reset password email to user
+    try:
+        email = data['email']
+        token = serializer.dumps(email, salt="password-reset-salt")
+        msg = Message('Reset Password', sender='daktari.weconnect@gmail.com', 
+                                        recipients=[email])
+        link = url_for('auth.reset', token=token, _external=True)
+        msg.body = "Click on this link to reset your password {}".format(link)
+        mail.send(msg)
+        return jsonify({'message': 'Check your email address for a link to'+
+                                    ' reset your account password.'})
+    except:
+        return jsonify({"message": "Sorry, the link was not sent. Try again"})
+
+
+@auth.route('/reset/<token>', methods=['GET','POST'])
+def reset(token):
+    """Reset user password"""
+    try:
+        email = serializer.loads(token, salt="password-reset-salt", 
+                                            max_age=1800)
+    except SignatureExpired:
+        return jsonify({"message":"Sorry, The token is expired!"})
+    except BadTimeSignature:
+        return jsonify({"message":"Sorry, The token is not correct!"})
     password_error = []
     data = request.get_json()
-    user = User.query.filter_by(username=current_user.username).first()
+    user = User.query.filter_by(email=email).first()
     if not user:
         return jsonify({'message':'User not found.'})
-    old_password = data['old_password']
-    new_password = data['new_password']
-    confirm_new_password = data['confirm_new_password']
+    new_password = generate_password_hash(data['new_password'])
+    confirm_new_password = generate_password_hash(data['new_password'])
     # Validate new password
     if not validate_password(new_password):
         error = {'Password error': 'Passwords must be at least 8 characters, '+
@@ -234,15 +259,12 @@ def reset_password(current_user):
     if new_password != confirm_new_password:
         return jsonify({'message': 'Your new password must match the confirm' +
             ' password before it can be reset.'})
-    if check_password_hash(current_user.first_password, old_password):
-        user.first_password = generate_password_hash(data[
-                                'new_password'])
-        user.confirm_password = generate_password_hash(data[
-                                'confirm_new_password'])
-        return jsonify({"message" : "Password reset successful"})
-    else:
-        return jsonify({'message': 'Your old password must match the current' +
-            ' password before it can be reset.'})
+    # Reset the user password
+    user.first_password = new_password
+    user.confirm_password = new_password
+    db.session.commit()
+    return jsonify({'message': 'Your password has been reset '+
+                                    'successfully. You can now log in'})
             
 @auth.route('/logout', methods=['POST'])
 @token_required

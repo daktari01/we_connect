@@ -16,6 +16,7 @@ class User(db.Model):
     email_confirmed = db.Column(db.Boolean, nullable=True)
     businesses = db.relationship('Business', backref='user', lazy='dynamic')
     reviews = db.relationship('Review', backref='user', lazy='dynamic')
+    
 
 class Business(db.Model):
     """Class for the businesses model"""
