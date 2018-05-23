@@ -5,7 +5,7 @@ from flask import request, jsonify
 # Local imports
 from . import busn
 from app.v2.models import Business, Review
-from app.v2.auth.views import token_required, email_confirmed
+from app.v2.auth.views import token_required, email_confirmed, token_valid
 from app import db
 
 def validate_business_name(name):
@@ -36,6 +36,7 @@ def validate_review_text(text):
 @busn.route('/businesses', methods=['POST'])
 @token_required
 @email_confirmed
+@token_valid
 def create_business(current_user):
     """Register a business"""
     data = request.get_json()
@@ -61,7 +62,7 @@ def create_business(current_user):
                             ' spaces with characters between 2-100'}
         validation_error.append(error)
     if validation_error:
-        return jsonify(validation_error)
+        return jsonify(validation_error), 400
     # Get rid of duplicates
     for business in businesses:
         if data['name'] == business.name:
@@ -71,9 +72,9 @@ def create_business(current_user):
             web_address_error = {'message':'A business with that web address'+
                                         ' already exists. Try another one'}
     if busn_name_error:
-        return jsonify(busn_name_error)
+        return jsonify(busn_name_error), 400
     if web_address_error:
-        return jsonify(web_address_error)
+        return jsonify(web_address_error), 400
     new_business = Business(user_id=current_user.id, name=data['name'],
                     location=data['location'], category = data['category'],
                     web_address = data['web_address'])
@@ -81,9 +82,9 @@ def create_business(current_user):
     try:
         db.session.add(new_business)
         db.session.commit()
-        return jsonify({'message': 'Business registered successfully'})
+        return jsonify({'message': 'Business registered successfully'}), 201
     except (Exception, psycopg2.DatabaseError) as error:
-        return jsonify(str(error))
+        return jsonify(str(error)), 400
 
 @busn.route('/businesses', methods=['GET'])
 def retrieve_businesses():
@@ -115,7 +116,7 @@ def retrieve_businesses():
         business_data['category'] = business.category
         business_data['web_address'] = business.web_address
         output.append(business_data)
-    return jsonify({'businesses' : output})
+    return jsonify({'businesses' : output}), 200
 
 @busn.route('/businesses/<business_id>', methods=['GET'])
 def retrieve_one_business(business_id):
@@ -129,11 +130,12 @@ def retrieve_one_business(business_id):
     business_data['location'] = business.location
     business_data['category'] = business.category
     business_data['web_address'] = business.web_address
-    return jsonify(business_data)
+    return jsonify(business_data), 200
 
 @busn.route('/businesses/<business_id>', methods=['PUT'])
 @token_required
 @email_confirmed
+@token_valid
 def edit_one_business(current_user, business_id):
     """Edit business details"""
     validation_error = []
@@ -176,27 +178,29 @@ def edit_one_business(current_user, business_id):
 @busn.route('/businesses/<business_id>', methods=['DELETE'])
 @token_required
 @email_confirmed
+@token_valid
 def delete_one_business(current_user, business_id):
     """Delete business details"""
     business = Business.query.filter_by(id=business_id).first()
     if not business:
-        return jsonify({'message':'Business not found'})
+        return jsonify({'message':'Business not found'}), 404
     if business.user_id != current_user.id:
-        return jsonify({'message': 'User can only delete own businesses'})
+        return jsonify({'message': 'User can only delete own businesses'}), 401
     db.session.delete(business)
     db.session.commit()
-    return jsonify({'message' : 'Business deleted successfully!'})
+    return jsonify({'message' : 'Business deleted successfully!'}), 200
 
 @busn.route('/businesses/<business_id>/reviews', methods=['POST'])
 @token_required
 @email_confirmed
+@token_valid
 def post_review_for_business(current_user, business_id):
     """Post review for a business"""
     review_error = []
     business = Business.query.filter_by(id=business_id).first()
     data = request.get_json()
     if not business:
-        return jsonify({'message':'Business not found'})
+        return jsonify({'message':'Business not found'}), 404
     if not validate_review_title(data['review_title']):
         error = {'Review title error': 'Review title can only contain '+
             'alphanumeric, spaces and commas with characters between 2-100'}
@@ -207,7 +211,7 @@ def post_review_for_business(current_user, business_id):
             'with characters between 2-100'}
         review_error.append(error)
     if review_error:
-        return jsonify({'review validation error' : review_error})
+        return jsonify({'review validation error' : review_error}), 400
     new_review = Review(rev_user_id=current_user.id, business_id=business_id,
                         review_title=data['review_title'],
                         review_text=data['review_text'])
@@ -215,9 +219,9 @@ def post_review_for_business(current_user, business_id):
     try:
         db.session.add(new_review)
         db.session.commit()
-        return jsonify({'message': 'Review posted successfully'})
+        return jsonify({'message': 'Review posted successfully'}), 200
     except (Exception, psycopg2.DatabaseError) as error:
-        return jsonify(str(error))
+        return jsonify(str(error)), 400
 
 @busn.route('/businesses/<business_id>/reviews', methods=['GET'])
 def get_reviews_for_business(business_id):
@@ -226,7 +230,7 @@ def get_reviews_for_business(business_id):
     limit = request.args.get('limit', default=5, type=int)
     business = Business.query.filter_by(id=business_id).first()
     if not business:
-        return jsonify({'message':'Business not found'})
+        return jsonify({'message':'Business not found'}), 404
     reviews = business.reviews.paginate(page, limit, error_out=False).items
     output = []
     # Get review data into a list of dictionaries
@@ -236,5 +240,5 @@ def get_reviews_for_business(business_id):
         review_data['review_text'] = review.review_text
         review_data['date_reviewed'] = review.date_reviewed
         output.append(review_data)
-    return jsonify({'reviews' : output})
+    return jsonify({'reviews' : output}), 200
     

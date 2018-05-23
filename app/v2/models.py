@@ -14,9 +14,9 @@ class User(db.Model):
     first_password = db.Column(db.String(250))
     confirm_password = db.Column(db.String(250))
     email_confirmed = db.Column(db.Boolean, nullable=True)
+    logged_in = db.Column(db.Boolean, nullable=True)
     businesses = db.relationship('Business', backref='user', lazy='dynamic')
     reviews = db.relationship('Review', backref='user', lazy='dynamic')
-    
 
 class Business(db.Model):
     """Class for the businesses model"""
@@ -40,5 +40,5 @@ class Review(db.Model):
     review_title = db.Column(db.String(150))
     review_text = db.Column(db.String(250))
     date_reviewed = db.Column(db.DateTime, default=db.func.current_timestamp())
-    
+
 

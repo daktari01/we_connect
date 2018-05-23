@@ -54,7 +54,19 @@ def email_confirmed(fn):
     def decorated(*args, **kwargs):
         user = args[0]
         if not user.email_confirmed:
-            return jsonify({"message": "Your account has not been activated."})
+            return jsonify({"message": "Your account has not"+
+                                        " been activated."}), 401
+        return fn(*args, **kwargs)
+    return decorated
+
+def token_valid(fn):
+    """Decorator to require valid token"""
+    @wraps(fn)
+    def decorated(*args, **kwargs):
+        user = args[0]
+        if not user.logged_in:
+            return jsonify({"message": "You are logged out. "+
+                                        "Login to proceed."}), 401
         return fn(*args, **kwargs)
     return decorated
 
@@ -106,10 +118,10 @@ def register():
                 'contain at least an alphabet, a digit and a special character'}
         validation_error.append(error)
     if validation_error:
-        return jsonify({'Validation error': validation_error})
+        return jsonify({'Validation error': validation_error}), 400
     first_password = generate_password_hash(data['first_password'])
     if not check_password_hash(first_password, data['confirm_password']):
-        return({'message': 'Your passwords do not match! Try again'})
+        return({'message': 'Your passwords do not match! Try again'}), 400
     confirm_password = generate_password_hash(data['confirm_password'])
     # Get rid of duplicate username and email
     for user in users:
@@ -120,19 +132,19 @@ def register():
             email_error = {'message': 'Email already exists.'+
                                         ' Try another one.'}
     if username_error:
-        return jsonify(username_error)
+        return jsonify(username_error), 400
     if email_error:
-        return jsonify(email_error)
+        return jsonify(email_error), 400
     new_user = User(first_name=data['first_name'], last_name=data['last_name'],
         username=data['username'], email=data['email'],
         first_password=first_password, confirm_password=confirm_password, 
-        email_confirmed = False)
+        email_confirmed=False, logged_in=False)
     # Save to database
     try:
         db.session.add(new_user)
         db.session.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        return jsonify(str(error))
+        return jsonify(str(error)), 400
     # Send activation email to user
     try:
         email = data['email']
@@ -144,9 +156,10 @@ def register():
         mail.send(msg)
         return jsonify({'message': 'User registered successfully. Check your'+
                                     ' email address for an activation'+
-                                    ' link to activate your account'})
+                                    ' link to activate your account'}), 200
     except:
-        return jsonify({"message": "Sorry, the link was not sent. Try again"})
+        return jsonify({"message": "Sorry, the link was not "+
+                                    "sent. Try again"}), 400
 
 @auth.route('/confirm_email/<token>', methods=['GET', 'POST'])
 def confirm_email(token):
@@ -164,11 +177,12 @@ def confirm_email(token):
         return({"message": "User not found"})
     user.email_confirmed = True
     db.session.commit()
-    return "<h3>Your account is activated!</h3>"
+    return "<h3>Your account has been activated!</h3>"
 
 @auth.route('/users', methods=['GET'])
 @token_required
 @email_confirmed
+@token_valid
 def get_users(current_user):
     """Retrieve all users from the database"""
     page = request.args.get('page', default=1, type=int)
@@ -187,7 +201,7 @@ def get_users(current_user):
         user_data['username'] = user.username
         user_data['email'] = user.email
         output.append(user_data)
-    return jsonify({'users' : output})
+    return jsonify({'users' : output}), 200
 
 @auth.route('/login', methods=['POST'])
 def login():
@@ -208,6 +222,8 @@ def login():
         token = jwt.encode({'username' : user.username,
             'exp' : datetime.datetime.utcnow() + datetime.timedelta(
                 minutes=30)}, os.getenv('SECRET_KEY'))
+        user.logged_in = True
+        db.session.commit()
         return jsonify({'token' : token.decode('UTF-8')}), 200
     # Check if authentication fails
     return make_response("Your username does not match the password", 401, 
@@ -227,9 +243,10 @@ def reset_password():
         msg.body = "Click on this link to reset your password {}".format(link)
         mail.send(msg)
         return jsonify({'message': 'Check your email address for a link to'+
-                                    ' reset your account password.'})
+                                    ' reset your account password.'}), 200
     except:
-        return jsonify({"message": "Sorry, the link was not sent. Try again"})
+        return jsonify({"message": "Sorry, the link was not "+
+                                    "sent. Try again"}), 400
 
 
 @auth.route('/reset/<token>', methods=['GET','POST'])
@@ -239,35 +256,38 @@ def reset(token):
         email = serializer.loads(token, salt="password-reset-salt", 
                                             max_age=1800)
     except SignatureExpired:
-        return jsonify({"message":"Sorry, The token is expired!"})
+        return jsonify({"message":"Sorry, The token is expired!"}), 400
     except BadTimeSignature:
-        return jsonify({"message":"Sorry, The token is not correct!"})
+        return jsonify({"message":"Sorry, The token is not correct!"}), 400
     password_error = []
     data = request.get_json()
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({'message':'User not found.'})
-    new_password = generate_password_hash(data['new_password'])
-    confirm_new_password = generate_password_hash(data['new_password'])
+        return jsonify({'message':'User not found.'}), 404
+    new_password = data['new_password']
+    confirm_new_password = data['confirm_new_password']
     # Validate new password
     if not validate_password(new_password):
         error = {'Password error': 'Passwords must be at least 8 characters, '+
                 'contain at least an alphabet, a digit and a special character'}
         password_error.append(error)
     if password_error:
-        return jsonify({'Validation error': password_error})
+        return jsonify({'Validation error': password_error}), 400
     if new_password != confirm_new_password:
         return jsonify({'message': 'Your new password must match the confirm' +
-            ' password before it can be reset.'})
+            ' password before it can be reset.'}), 400
     # Reset the user password
-    user.first_password = new_password
-    user.confirm_password = new_password
+    user.first_password = generate_password_hash(new_password)
+    user.confirm_password = generate_password_hash(new_password)
     db.session.commit()
     return jsonify({'message': 'Your password has been reset '+
-                                    'successfully. You can now log in'})
+                                    'successfully. You can now log in'}), 200
             
 @auth.route('/logout', methods=['POST'])
 @token_required
 @email_confirmed
+@token_valid
 def logout(current_user):
-    return jsonify({'message':'Log out successful'})
+    current_user.logged_in = False
+    db.session.commit()
+    return jsonify({'message':'Log out successful'}), 200
