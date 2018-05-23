@@ -5,7 +5,7 @@ from flask import request, jsonify
 # Local imports
 from . import busn
 from app.v2.models import Business, Review
-from app.v2.auth.views import token_required
+from app.v2.auth.views import token_required, email_confirmed
 from app import db
 
 def validate_business_name(name):
@@ -35,6 +35,7 @@ def validate_review_text(text):
     return False
 @busn.route('/businesses', methods=['POST'])
 @token_required
+@email_confirmed
 def create_business(current_user):
     """Register a business"""
     data = request.get_json()
@@ -132,6 +133,7 @@ def retrieve_one_business(business_id):
 
 @busn.route('/businesses/<business_id>', methods=['PUT'])
 @token_required
+@email_confirmed
 def edit_one_business(current_user, business_id):
     """Edit business details"""
     validation_error = []
@@ -173,6 +175,7 @@ def edit_one_business(current_user, business_id):
 
 @busn.route('/businesses/<business_id>', methods=['DELETE'])
 @token_required
+@email_confirmed
 def delete_one_business(current_user, business_id):
     """Delete business details"""
     business = Business.query.filter_by(id=business_id).first()
@@ -186,6 +189,7 @@ def delete_one_business(current_user, business_id):
 
 @busn.route('/businesses/<business_id>/reviews', methods=['POST'])
 @token_required
+@email_confirmed
 def post_review_for_business(current_user, business_id):
     """Post review for a business"""
     review_error = []

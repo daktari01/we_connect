@@ -268,5 +268,6 @@ def reset(token):
             
 @auth.route('/logout', methods=['POST'])
 @token_required
+@email_confirmed
 def logout(current_user):
     return jsonify({'message':'Log out successful'})
