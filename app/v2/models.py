@@ -13,9 +13,10 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True)
     first_password = db.Column(db.String(250))
     confirm_password = db.Column(db.String(250))
+    email_confirmed = db.Column(db.Boolean, nullable=True)
     businesses = db.relationship('Business', backref='user', lazy='dynamic')
     reviews = db.relationship('Review', backref='user', lazy='dynamic')
-
+    
 
 class Business(db.Model):
     """Class for the businesses model"""

@@ -14,7 +14,7 @@ def create_app(config_name):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
     migrate = Migrate(app, db)
     db.init_app(app)
-
+    
     # Register the auth_v1 blueprint
     from app.v1.auth import auth_v1 as auth_blueprint_v1
     app.register_blueprint(auth_blueprint_v1, url_prefix='/api/v1/auth')
