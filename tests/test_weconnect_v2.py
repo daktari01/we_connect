@@ -1,27 +1,31 @@
+import os
 import unittest
 import json
 
 from app import db, create_app
 from app.v2.models import User, Review, Business
+from flask import Flask
+from flask_mail import Message, Mail
 
 class TestWeconnect(unittest.TestCase):
     """Class that contains tests for the version 2 of WeConnect"""
-
     def setUp(self):
         """Initaliaze variables to be used in testing"""
         self.app = create_app(config_name="testing")
+
         self.client = self.app.test_client
         self.test_user = {"username":"morris", "first_name" : "Morris",
-            "last_name" : "Maluni", "email":"maluni@weconnect.com",
+            "last_name" : "Maluni", "email":"dindi.jerrie@gmail.com",
             "first_password":"maluni123$", "confirm_password":"maluni123$"}
         self.test_user2 = {"username":"persontest", "first_name" : "Person",
-            "last_name" : "Test", "email":"person@weconnect.com",
+            "last_name" : "Test", "email":"james.dindi@andela.com",
             "first_password":"Person123##", "confirm_password":"Person123##"}
         self.login_user = {"username":"login", "first_name" : "Login",
-            "last_name" : "User", "email":"login.user@weconnect.com",
+            "last_name" : "User", "email":"dindijjames@gmail.com",
             "first_password":"login123&", "confirm_password":"login123&"}
         self.test_login = {"username":"morris", "password":"maluni123$"}
-        self.user_login = {"username":"login", "password":"login123&"}
+        self.test_login1 = {"username":"", "password":"maluni123$"}
+        self.user_login = {"username": "login", "password":"login123&"}
         self.reset_password = {"old_password": "maluni123$",
                                 "new_password": "maluni456%",
                                 "confirm_new_password": "maluni456%"}
@@ -63,6 +67,10 @@ class TestWeconnect(unittest.TestCase):
                     headers={'content-type':'application/json',
                                 'x-access-token': self.token})
 
+        # # Activate account for users
+        test_morris = User.query.filter_by(username="morris").first()
+        test_morris.email_confirmed = True
+
         with self.app.app_context():
             # Create all tables
             db.create_all()
@@ -83,6 +91,10 @@ class TestWeconnect(unittest.TestCase):
                     data=json.dumps(self.test_user),
                     content_type='application/json')
         self.assertIn('Username already exists.', str(response.data))
+
+    def test_user_can_confirm_email(self):
+        """Test that a user can confirm own email"""
+        pass
 
     def test_user_can_login(self):
         """Test that a registered user can log in"""
@@ -105,14 +117,6 @@ class TestWeconnect(unittest.TestCase):
                     headers={'content-type':'application/json',
                         'x-access-token': self.token})
         self.assertEqual(response.status_code, 200)
-
-    def test_user_can_logout(self):
-        """Test that user can log out"""
-        response = self.client().post('/api/v2/auth/logout',
-                    data=json.dumps(self.login_user),
-                    headers={'content-type':'application/json',
-                                'x-access-token': self.token})
-        self.assertIn('Log out successful', str(response.data))
 
     def test_user_can_register_business(self):
         """Test that user can register a business"""
@@ -187,6 +191,43 @@ class TestWeconnect(unittest.TestCase):
         response = self.client().get('/api/v2/businesses/{}/reviews'
                     .format(business_id), content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
+    def test_user_can_logout(self):
+        """Test that user can log out"""
+        response = self.client().post('/api/v2/auth/logout',
+                    data=json.dumps(self.login_user),
+                    headers={'content-type':'application/json',
+                                'x-access-token': self.token})
+        self.assertIn('Log out successful', str(response.data))
+
+    # Test the custom error messages
+    def test_400_error(self):
+        """Test the custom 400 error message"""
+        response = self.client().post('/api/v2/auth/register',
+                    data=json.dumps(self.test_user),
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Username already exists. Try another '+
+                                                'one.', str(response.data))
+
+    def test_401_error(self):
+        """Test the custom 401 error message"""
+        response = self.client().post('/api/v2/auth/login',
+                    data=json.dumps(self.test_login1),
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+        self.assertIn('Both username and password must be '+
+                                        'provided', str(response.data))
+
+    def test_404_error(self):
+        """Test the custom 404 error message"""
+        response = self.client().post('/api/v2/auth/regist',
+                    data=json.dumps(self.test_user2),
+                    content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('page you are looking for does not '+
+                                    'exist', str(response.data))
+
 
     def tearDown(self):
         """Destroy all initialized variables"""

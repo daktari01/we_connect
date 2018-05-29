@@ -88,12 +88,6 @@ def validate_password(password):
         return True
     return False
 
-# Handle 404 error
-@auth.errorhandler(404)
-def page_not_found(e):
-    return jsonify({"message": "The page you are looking for "+
-                                    "does not exist."}), 404
-
 @auth.route('/register', methods=['POST'])
 def register():
     """Register new user to the system"""
