@@ -67,14 +67,14 @@ class TestWeconnect(unittest.TestCase):
                     headers={'content-type':'application/json',
                                 'x-access-token': self.token})
 
-        # # Activate account for users
-        test_morris = User.query.filter_by(username="morris").first()
-        test_morris.email_confirmed = True
-
         with self.app.app_context():
             # Create all tables
             db.create_all()
         self.app.app_context().push()
+
+        # # Activate account for users
+        test_morris = User.query.filter_by(username="morris").first()
+        test_morris.email_confirmed = True
 
 
     def test_user_can_register(self):

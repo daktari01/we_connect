@@ -14,7 +14,7 @@ from functools import wraps
 # Email configurations
 app = Flask(__name__)
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = 587
+app.config['MAIL_PORT'] = 465
 app.config['EMAIL_TIMEOUT'] = 20
 app.config['MAIL_USE_TLS'] = 1
 app.config['MAIL_USE_SSL'] = False
