@@ -21,7 +21,7 @@ class User(db.Model):
 class Business(db.Model):
     """Class for the businesses model"""
     __tablename__ = 'businesses'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     name = db.Column(db.String(100), index=True, unique=True)

@@ -1,11 +1,9 @@
-import os
 import unittest
 import json
 
 from app import db, create_app
 from app.v2.models import User, Review, Business
-from flask import Flask
-from flask_mail import Message, Mail
+from flask_mail import Mail
 
 class TestWeconnect(unittest.TestCase):
     """Class that contains tests for the version 2 of WeConnect"""
@@ -45,7 +43,7 @@ class TestWeconnect(unittest.TestCase):
         self.app.app_context().push()
 
         # Set up the token
-        self.client().post('/api/v2/auth/register', 
+        self.client().post('/api/v2/auth/register',
             data=json.dumps(self.login_user),
             content_type='application/json')
         to_response = self.client().post('/api/v2/auth/login',
@@ -110,7 +108,7 @@ class TestWeconnect(unittest.TestCase):
 
     def test_user_can_reset_password(self):
         """Test that a logged in user can reset own password"""
-        response = self.client().post('/api/v2/auth/reset-password', 
+        response = self.client().post('/api/v2/auth/reset-password',
                     data=json.dumps(self.reset_password),
                     headers={'content-type':'application/json',
                         'x-access-token': self.token})
@@ -118,12 +116,12 @@ class TestWeconnect(unittest.TestCase):
 
     def test_user_can_register_business(self):
         """Test that user can register a business"""
-        response = self.client().post('/api/v2/businesses', 
+        response = self.client().post('/api/v2/businesses',
                     data=json.dumps(self.test_business3),
                     headers={'content-type':'application/json',
                                 'x-access-token': self.token})
-        self.assertEqual(response.status_code, 201)
-        self.assertIn('Business registered successfully', str(response.data))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('category', str(response.data))
 
     def test_user_cannot_register_duplicate_business(self):
         """Test that a user cannot register a duplicate business"""
@@ -142,7 +140,7 @@ class TestWeconnect(unittest.TestCase):
 
     def test_user_can_get_one_business(self):
         """Test that a user can get one business by id"""
-        response = self.client().get('/api/v2/businesses/1', 
+        response = self.client().get('/api/v2/businesses/1',
                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
 

@@ -2,6 +2,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 
 # Local imports
 from config import app_config
@@ -12,9 +13,10 @@ def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
+    CORS(app)
     migrate = Migrate(app, db)
     db.init_app(app)
-    
+
     # Register the auth_v1 blueprint
     from app.v1.auth import auth_v1 as auth_blueprint_v1
     app.register_blueprint(auth_blueprint_v1, url_prefix='/api/v1/auth')

@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify, make_response, url_for
 from flask_mail import Message, Mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-from itsdangerous import BadTimeSignature 
+from itsdangerous import BadTimeSignature
 from functools import wraps
 
 # Local imports
@@ -134,7 +134,7 @@ def register():
         return jsonify(email_error), 400
     new_user = User(first_name=data['first_name'], last_name=data['last_name'],
         username=data['username'], email=data['email'],
-        first_password=first_password, confirm_password=confirm_password, 
+        first_password=first_password, confirm_password=confirm_password,
         email_confirmed=False, logged_in=False)
     # Save to database
     try:
@@ -146,7 +146,7 @@ def register():
     try:
         email = data['email']
         token = serializer.dumps(email, salt="email-confirmation-salt")
-        msg = Message('Confirm email', sender='daktari.weconnect@gmail.com', 
+        msg = Message('Confirm email', sender='daktari.weconnect@gmail.com',
                                         recipients=[email])
         link = url_for('auth.confirm_email', token=token, _external=True)
         msg.body = "Click on this link to activate your account {}".format(link)
@@ -162,7 +162,7 @@ def register():
 def confirm_email(token):
     """Method to confirm user email"""
     try:
-        email = serializer.loads(token, salt="email-confirmation-salt", 
+        email = serializer.loads(token, salt="email-confirmation-salt",
                                             max_age=1800)
     except SignatureExpired:
         return "<h3>Sorry, The token is expired!</h3>"
@@ -212,20 +212,20 @@ def login():
 
     # Check if user is not in system
     if not user:
-        return make_response("User not found.", 401, 
+        return make_response("User not found.", 401,
                 {'WWW-Authenticate' : 'Basic realm="User not found. Register.'})
     # Check if password given matches password in WeConnect
     if check_password_hash(user.first_password, data['password']):
         token = jwt.encode({'username' : user.username,
             'exp' : datetime.datetime.utcnow() + datetime.timedelta(
-                minutes=30)}, os.getenv('SECRET_KEY'))
+                minutes=1440)}, os.getenv('SECRET_KEY'))
         user.logged_in = True
         db.session.commit()
         return jsonify({'token' : token.decode('UTF-8')}), 200
     # Check if authentication fails
-    return make_response("Your username does not match the password", 401, 
+    return make_response("Your username does not match the password", 401,
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
-                
+        
 @auth.route('/reset-password', methods=['POST'])
 def reset_password():
     """Reset user password"""
@@ -250,7 +250,7 @@ def reset_password():
 def reset(token):
     """Reset user password"""
     try:
-        email = serializer.loads(token, salt="password-reset-salt", 
+        email = serializer.loads(token, salt="password-reset-salt",
                                             max_age=1800)
     except SignatureExpired:
         return jsonify({"message":"Sorry, The token is expired!"}), 400

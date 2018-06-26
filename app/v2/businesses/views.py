@@ -82,15 +82,28 @@ def create_business(current_user):
     try:
         db.session.add(new_business)
         db.session.commit()
-        return jsonify({'message': 'Business registered successfully'}), 201
+        # ++++
+        one_business = new_business
+        busn_id = one_business.id
+        business = Business.query.filter_by(id=busn_id).first()
+        business_data = {}
+        business_data['id'] = business.id
+        business_data['user_id'] = business.user_id
+        business_data['name'] = business.name
+        business_data['location'] = business.location
+        business_data['category'] = business.category
+        business_data['web_address'] = business.web_address
+        return jsonify(business_data), 200
+        # +++
+        # return jsonify({'message': 'Business registered successfully'}), 201
     except (Exception, psycopg2.DatabaseError) as error:
         return jsonify(str(error)), 400
 
 @busn.route('/businesses', methods=['GET'])
 def retrieve_businesses():
     """Get all businesses from the database"""
-    page = request.args.get('page', default=1, type=int)
-    limit = request.args.get('limit', default=9, type=int)
+    page = request.args.get('page', type=int)
+    limit = request.args.get('limit', type=int)
     search_query = request.args.get('q', default=None, type=str)
     search_category = request.args.get('category', default=None, type=str)
     search_location = request.args.get('location', default=None, type=str)
@@ -110,6 +123,45 @@ def retrieve_businesses():
     # Get business data into a list of dictionaries
     for business in businesses:
         business_data = {}
+        business_data['id'] = business.id
+        business_data['user_id'] = business.user_id
+        business_data['name'] = business.name
+        business_data['location'] = business.location
+        business_data['category'] = business.category
+        business_data['web_address'] = business.web_address
+        output.append(business_data)
+    return jsonify({'businesses' : output}), 200
+
+
+@busn.route('/my-businesses', methods=['GET'])
+@token_required
+@email_confirmed
+@token_valid
+def retrieve_mybusinesses(current_user):
+    """Get all businesses for the user from the database"""
+    my_businesses = Business.query.filter_by(user_id=current_user.id)
+    page = request.args.get('page', type=int)
+    limit = request.args.get('limit', type=int)
+    search_query = request.args.get('q', default=None, type=str)
+    search_category = request.args.get('category', default=None, type=str)
+    search_location = request.args.get('location', default=None, type=str)
+    if search_query:
+        businesses = my_businesses.filter(Business.name.ilike('%'+
+            search_query+'%')).paginate(page, limit, error_out=False).items
+    elif search_category:
+        businesses = my_businesses.filter(Business.category.ilike('%'+
+            search_category+'%')).paginate(page, limit, error_out=False).items
+    elif search_location:
+        businesses = my_businesses.filter(Business.location.ilike('%'+
+            search_location+'%')).paginate(page, limit, error_out=False).items
+    else:
+        businesses = my_businesses.paginate(
+                                    page, limit, error_out=False).items
+    output = []
+    # Get business data into a list of dictionaries
+    for business in businesses:
+        business_data = {}
+        business_data['id'] = business.id
         business_data['user_id'] = business.user_id
         business_data['name'] = business.name
         business_data['location'] = business.location
@@ -125,6 +177,7 @@ def retrieve_one_business(business_id):
     if not business:
         return jsonify({'message':'Business not found'})
     business_data = {}
+    business_data['id'] = business.id
     business_data['user_id'] = business.user_id
     business_data['name'] = business.name
     business_data['location'] = business.location
@@ -236,6 +289,7 @@ def get_reviews_for_business(business_id):
     # Get review data into a list of dictionaries
     for review in reviews:
         review_data = {}
+        review_data['review_id'] = review.id
         review_data['review_title'] = review.review_title
         review_data['review_text'] = review.review_text
         review_data['date_reviewed'] = review.date_reviewed

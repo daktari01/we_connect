@@ -15,7 +15,7 @@ class TestRegex(unittest.TestCase):
         wrong_name = '[]@@99'
         self.assertTrue(validate_names(correct_name))
         self.assertFalse(validate_names(wrong_name))
-        
+
     def test_validate_username(self):
         """Test that only valid usernames will be allowed"""
         correct_username = 'johnie'
