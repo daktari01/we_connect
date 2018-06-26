@@ -26,9 +26,7 @@ class TestWeconnect(unittest.TestCase):
         self.test_login = {"username":"morris", "password":"maluni123$"}
         self.test_login1 = {"username":"", "password":"maluni123$"}
         self.user_login = {"username": "login", "password":"login123&"}
-        self.reset_password = {"old_password": "maluni123$",
-                                "new_password": "maluni456%",
-                                "confirm_new_password": "maluni456%"}
+        self.reset_password = {"email":"dindijjames@gmail.com"}
         self.test_business = {"name":"Andela", "location":"Nairobi, Kenya",
                                 "category": "Software development",
                                 "web_address":"https://www.andela.com"}
@@ -40,6 +38,12 @@ class TestWeconnect(unittest.TestCase):
                                 "web_address":"http://www.cocacola.com"}
         self.test_review = {"review_title": "I liked it",
                             "review_text": "Lorem ipsum dolor sit amet"}
+
+        with self.app.app_context():
+            # Create all tables
+            db.create_all()
+        self.app.app_context().push()
+
         # Set up the token
         self.client().post('/api/v2/auth/register', 
             data=json.dumps(self.login_user),
@@ -55,6 +59,10 @@ class TestWeconnect(unittest.TestCase):
             data=json.dumps(self.test_user),
             content_type='application/json')
 
+        # Activate account for users
+        test_login_user = User.query.filter_by(username="login").first()
+        test_login_user.email_confirmed = True
+
         # Register business 1
         self.client().post('/api/v2/businesses',
                     data=json.dumps(self.test_business),
@@ -66,16 +74,6 @@ class TestWeconnect(unittest.TestCase):
                     data=json.dumps(self.test_business2),
                     headers={'content-type':'application/json',
                                 'x-access-token': self.token})
-
-        with self.app.app_context():
-            # Create all tables
-            db.create_all()
-        self.app.app_context().push()
-
-        # # Activate account for users
-        test_morris = User.query.filter_by(username="morris").first()
-        test_morris.email_confirmed = True
-
 
     def test_user_can_register(self):
         """Test user can be registered into the system"""
@@ -124,7 +122,7 @@ class TestWeconnect(unittest.TestCase):
                     data=json.dumps(self.test_business3),
                     headers={'content-type':'application/json',
                                 'x-access-token': self.token})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertIn('Business registered successfully', str(response.data))
 
     def test_user_cannot_register_duplicate_business(self):

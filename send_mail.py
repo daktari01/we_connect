@@ -5,13 +5,10 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 
 app = Flask(__name__)
-app.config['MAIL_SERVER'] ='smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['EMAIL_TIMEOUT'] = 10
-app.config['MAIL_USE_TLS'] = 1
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'daktari.weconnect@gmail.com'
-app.config['MAIL_PASSWORD'] = 'fqpgpbjeidbznadr'
+app.config['MAIL_SERVER'] ='smtp.sendgrid.net'
+app.config['MAIL_PORT'] = 25
+app.config['MAIL_USERNAME'] = 'daktari01'
+app.config['MAIL_PASSWORD'] = 'weconnectus#2'
 
 mail = Mail(app)
 

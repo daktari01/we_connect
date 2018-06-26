@@ -11,22 +11,19 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from itsdangerous import BadTimeSignature 
 from functools import wraps
 
-# Email configurations
-app = Flask(__name__)
-app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = 465
-app.config['EMAIL_TIMEOUT'] = 20
-app.config['MAIL_USE_TLS'] = 1
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-
-mail = Mail(app)
-
 # Local imports
 from . import auth
 from app.v2.models import User
 from app import db
+
+# Email configurations
+app = Flask(__name__)
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+
+mail = Mail(app)
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
 
@@ -291,4 +288,3 @@ def logout(current_user):
     current_user.logged_in = False
     db.session.commit()
     return jsonify({'message':'Log out successful'}), 200
-
