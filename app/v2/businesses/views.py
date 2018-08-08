@@ -82,7 +82,6 @@ def create_business(current_user):
     try:
         db.session.add(new_business)
         db.session.commit()
-        # ++++
         one_business = new_business
         busn_id = one_business.id
         business = Business.query.filter_by(id=busn_id).first()
@@ -94,7 +93,6 @@ def create_business(current_user):
         business_data['category'] = business.category
         business_data['web_address'] = business.web_address
         return jsonify(business_data), 200
-        # +++
         # return jsonify({'message': 'Business registered successfully'}), 201
     except (Exception, psycopg2.DatabaseError) as error:
         return jsonify(str(error)), 400

@@ -4,7 +4,7 @@ import jwt
 import datetime
 import psycopg2
 
-from flask import Flask, request, jsonify, make_response, url_for
+from flask import Flask, request, jsonify, make_response, url_for, redirect
 from flask_mail import Message, Mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
@@ -26,6 +26,8 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 mail = Mail(app)
 
 serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+
+local_url = os.getenv('LOCAL_URL')
 
 def token_required(fn):
     """Decorator to require authentication token"""
@@ -149,7 +151,7 @@ def register():
         msg = Message('Confirm email', sender='daktari.weconnect@gmail.com',
                                         recipients=[email])
         link = url_for('auth.confirm_email', token=token, _external=True)
-        msg.body = "Click on this link to activate your account {}".format(link)
+        msg.body = "You are almost there.<br/>Click on this <a href={}>link</a> to activate your WeConnect account".format(link)
         mail.send(msg)
         return jsonify({'message': 'User registered successfully. Check your'+
                                     ' email address for an activation'+
@@ -174,7 +176,7 @@ def confirm_email(token):
         return({"message": "User not found"})
     user.email_confirmed = True
     db.session.commit()
-    return "<h3>Your account has been activated!</h3>"
+    return redirect(local_url + "/login")
 
 @auth.route('/users', methods=['GET'])
 @token_required
@@ -221,7 +223,7 @@ def login():
                 minutes=1440)}, os.getenv('SECRET_KEY'))
         user.logged_in = True
         db.session.commit()
-        return jsonify({'token' : token.decode('UTF-8')}), 200
+        return jsonify({'token' : token.decode('UTF-8'), 'user_id':user.id}), 200
     # Check if authentication fails
     return make_response("Your username does not match the password", 401,
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
@@ -236,7 +238,7 @@ def reset_password():
         token = serializer.dumps(email, salt="password-reset-salt")
         msg = Message('Reset Password', sender='daktari.weconnect@gmail.com', 
                                         recipients=[email])
-        link = url_for('auth.reset', token=token, _external=True)
+        link = local_url + "/reset/" + token
         msg.body = "Click on this link to reset your password {}".format(link)
         mail.send(msg)
         return jsonify({'message': 'Check your email address for a link to'+
