@@ -10,6 +10,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from itsdangerous import BadTimeSignature
 from functools import wraps
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # Local imports
 from . import auth
@@ -94,30 +96,20 @@ def register():
     users = User.query.all()
     email_error = {}
     username_error = {}
-    validation_error = []
+    validation_error = {}
     # Validate user input
     if not validate_names(data['first_name']):
-        error = {'First name error':
-            'First name must contain only alphabets between 2 to 50 characters'}
-        validation_error.append(error)
+        validation_error["firstname"] = 'First name must contain only alphabets between 2 to 50 characters'
     if not validate_names(data['last_name']):
-        error = {'Last name error':
-            'Last name must contain only alphabets between 2 to 50 characters'}
-        validation_error.append(error)
+        validation_error["lastname"] = 'Last name must contain only alphabets between 2 to 50 characters'
     if not validate_username(data['username']):
-        error = {'Username error':
-            'Username must contain only alphanumeric between 5 '+
-                                                        'to 20 characters'}
-        validation_error.append(error)
+        validation_error["username"] = 'Username must contain only alphanumeric between 5 to 20 characters'
     if not validate_email(data['email']):
-        error = {'Email error': 'Email is not valid'}
-        validation_error.append(error)
+        validation_error["email"] = 'Email is not valid'
     if not validate_password(data['first_password']):
-        error = {'Password error': 'Passwords must be at least 8 characters, '+
-                'contain at least an alphabet, a digit and a special character'}
-        validation_error.append(error)
+        validation_error["password"] = 'Passwords must be at least 8 characters, contain at least an alphabet, a digit and a special character'
     if validation_error:
-        return jsonify({'Validation error': validation_error}), 400
+        return jsonify({'validation_error': validation_error}), 400
     first_password = generate_password_hash(data['first_password'])
     if not check_password_hash(first_password, data['confirm_password']):
         return({'message': 'Your passwords do not match! Try again'}), 400
@@ -148,10 +140,10 @@ def register():
     try:
         email = data['email']
         token = serializer.dumps(email, salt="email-confirmation-salt")
-        msg = Message('Confirm email', sender='daktari.weconnect@gmail.com',
+        msg = Message('Confirm email', sender='daktari.weconnect@gmail.com', 
                                         recipients=[email])
         link = url_for('auth.confirm_email', token=token, _external=True)
-        msg.body = "You are almost there.<br/>Click on this <a href={}>link</a> to activate your WeConnect account".format(link)
+        msg.body = "Click on this link to activate your account {}".format(link)
         mail.send(msg)
         return jsonify({'message': 'User registered successfully. Check your'+
                                     ' email address for an activation'+
@@ -159,6 +151,7 @@ def register():
     except:
         return jsonify({"message": "Sorry, the link was not "+
                                     "sent. Try again"}), 400
+
 
 @auth.route('/confirm_email/<token>', methods=['GET', 'POST'])
 def confirm_email(token):
@@ -238,7 +231,7 @@ def reset_password():
         token = serializer.dumps(email, salt="password-reset-salt")
         msg = Message('Reset Password', sender='daktari.weconnect@gmail.com', 
                                         recipients=[email])
-        link = local_url + "/reset/" + token
+        link = url_for('auth.reset', token=token, _external=True)
         msg.body = "Click on this link to reset your password {}".format(link)
         mail.send(msg)
         return jsonify({'message': 'Check your email address for a link to'+

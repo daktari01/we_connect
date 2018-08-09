@@ -9,7 +9,7 @@ from app.v2.auth.views import token_required, email_confirmed, token_valid
 from app import db
 
 def validate_business_name(name):
-    if re.match(r'^(?=.*[A-Za-z])[a-zA-Z0-9\s]{2,50}$', name):
+    if re.match(r'^(?=.*[A-Za-z])[a-zA-Z0-9\s\.,]{2,50}$', name):
         return True
     return False
 def validate_web_address(address):
