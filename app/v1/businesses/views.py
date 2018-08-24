@@ -2,9 +2,9 @@ import os
 from flask import Flask, request, jsonify
 
 # Local imports
-from . import busy
-from v1.models import User, Business, Review
-from v1.auth.views import token_required
+from . import busy_v1
+from app.v1.models import User, Business, Review
+from app.v1.auth.views import token_required
 
 # Create instances of 'model' classes
 user = User()
@@ -14,7 +14,7 @@ review = Review()
 business_i = Business()
 reviews_i = Review()
 
-@busy.route('/businesses', methods=['POST'])
+@busy_v1.route('/businesses', methods=['POST'])
 @token_required
 def fn_create_businesses(current_user):
     """Create business"""
@@ -42,12 +42,12 @@ def fn_create_businesses(current_user):
     return jsonify({"message" : "Business created successfully"}), 201
     
     
-@busy.route('/businesses', methods=['GET'])
+@busy_v1.route('/businesses', methods=['GET'])
 def fn_get_businesses():
     """Get all businesses"""
     return jsonify(business_i.businesses), 200
 
-@busy.route('/businesses/<int:business_id>', methods=[
+@busy_v1.route('/businesses/<int:business_id>', methods=[
     'GET', 'PUT', 'DELETE'])
 @token_required
 def fn_business(current_user, business_id):
@@ -94,7 +94,7 @@ def fn_business(current_user, business_id):
         business_i.businesses.pop(single_business['business_id'])
         return jsonify({"message" : "Business deleted successfully"}), 200
 
-@busy.route('/businesses/<int:business_id>/reviews', 
+@busy_v1.route('/businesses/<int:business_id>/reviews',
                 methods=['GET', 'POST'])
 @token_required
 def fn_reviews(current_user, business_id):

@@ -1,14 +1,14 @@
-from flask import Flask, request, jsonify, make_response
-from werkzeug.security import generate_password_hash, check_password_hash
-import uuid
 import os
 import jwt
+import uuid
 import datetime
 from functools import wraps 
+from flask import request, jsonify, make_response
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Local imports
-from . import auth
-from v1.models import User
+from . import auth_v1
+from app.v1.models import User
 
 # Create instances of 'model' classes
 user = User()
@@ -30,7 +30,7 @@ def token_required(fn):
         return fn(current_user, *args, **kwargs)
     return decorated
 
-@auth.route('/register', methods=['POST'])
+@auth_v1.route('/register', methods=['POST'])
 def register_user():
     """Add a new user to the system"""
     data = request.get_json()
@@ -60,7 +60,7 @@ def register_user():
     user.users[data['username']] = new_user
     return jsonify({"message" : "User registered successfully"}), 201
 
-@auth.route('/users', methods=['GET'])
+@auth_v1.route('/users', methods=['GET'])
 @token_required
 def get_all_users(current_user):
     """Get all users"""
@@ -69,7 +69,7 @@ def get_all_users(current_user):
             'You are not allowed to perform this function'}), 401
     return jsonify(user.users), 200
 
-@auth.route('/login', methods=['POST'])
+@auth_v1.route('/login', methods=['POST'])
 def login():
     """Authenticate user and allow or deny user access"""
     data = request.get_json()
@@ -94,8 +94,7 @@ def login():
     return make_response("WeConnect was unable to authenticate", 401, 
                 {'WWW-Authenticate' : 'Basic realm="Login required'})
 
-
-@auth.route('/reset-password', methods=['POST'])
+@auth_v1.route('/reset-password', methods=['POST'])
 @token_required
 def reset_password(current_user):
     """Reset user password"""
@@ -116,7 +115,7 @@ def reset_password(current_user):
         return jsonify({'message': 'Your old password must match the current' +
             ' password before it can be reset.'})
 
-@auth.route('/logout', methods=['POST'])
+@auth_v1.route('/logout', methods=['POST'])
 @token_required
 def logout(current_user):
     """Log user out"""

@@ -1,25 +1,25 @@
 https://we-connect-daktari01.c9users.io:8080/api/v1/
 
+For v1 only, see bottom for v2
 User registration
 {
     "username":"morris",
     "name" : "Morris Maluni",
     "email":"maluni@weconnect.com",
-    "password":"maluni123",
-    "confirm_password":"maluni123"
+    "password":"maluni123&",
+    "confirm_password":"maluni123&"
 }
 
 User login
 {
     "username":"morris",
-    "password":"maluni123"
+    "password":"maluni123&"
 }
 
 Reset_password
 {
-    "old_password": "maluni123",
-    "new_password": "maluni456",
-    "confirm_new_password": "maluni456"
+    "new_password": "maluni456%",
+    "confirm_new_password": "maluni456%"
 }
 
 Create business
@@ -27,7 +27,7 @@ Create business
     "name":"Andela",
     "location":"Nairobi, Kenya",
     "category": "Software development",
-    "web_address":"www.andela.com"
+    "web_address":"https://www.andela.com"
 }
 
 Business 2
@@ -35,7 +35,7 @@ Business 2
     "name":"Google",
     "location":"San Francisco, CA",
     "category": "Web development",
-    "web_address":"www.google.com"
+    "web_address":"https://www.google.com"
 }
 
 Business 3
@@ -43,11 +43,38 @@ Business 3
     "name":"Cocacola",
     "location":"Atlanta, GA",
     "category": "Food and beverages",
-    "web_address":"www.cocacola.com"
+    "web_address":"http://www.cocacola.com"
 }
 
 Reviews
 {
     "review_title": "I liked it",
     "review_text": "Lorem ipsum dolor sit amet"
+}
+
+Version 2
+User registration
+{
+    "username":"james",
+    "first_name" : "James",
+    "last_name" : "Jerrie",
+    "email":"james.dindi@andela.com",
+    "first_password":"babayao#@1",
+    "confirm_password":"babayao#@1"
+}
+
+User login
+{
+    "username":"james",
+    "password":"babayao#@1"
+}
+
+Reset password
+{
+    "email": "james.dindi@andela.com"
+}
+reset
+{
+    "new_password": "mamayao#@1",
+    "confirm_new_password": "mamayao#@1"
 }

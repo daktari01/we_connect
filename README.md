@@ -72,6 +72,12 @@ If you are using Windows, liase with your system admin to help you in the instal
 3. Make changes
 4. Create a pull request
 
+## Live App
+[On Heroku](https://daktari01-weconnect.herokuapp.com/)
+
+## Documentation
+Swagger.io
+
 ## Licence
 The software is protected under [MIT License](https://github.com/daktari01/we_connect/blob/master/LICENSE)
 

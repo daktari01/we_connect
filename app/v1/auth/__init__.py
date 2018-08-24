@@ -1,8 +1,5 @@
 from flask import Blueprint
 
-busy = Blueprint('busy', __name__)
+auth_v1 = Blueprint('auth_v1', __name__)
 
 from . import views
-
-
-
